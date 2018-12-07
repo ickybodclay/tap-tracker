@@ -22,7 +22,7 @@ public abstract class TaskRoomDatabase extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             TaskRoomDatabase.class, "task_database")
-                            .addCallback(sRoomDatabaseCallback)
+                            //.addCallback(sRoomDatabaseCallback)
                             .build();
                 }
             }
@@ -41,7 +41,6 @@ public abstract class TaskRoomDatabase extends RoomDatabase {
             };
 
     private static class PopulateDbAsync extends AsyncTask<Void, Void, Void> {
-
         private final TaskDao mDao;
 
         PopulateDbAsync(TaskRoomDatabase db) {
