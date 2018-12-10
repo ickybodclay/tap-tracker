@@ -1,6 +1,6 @@
 package com.detroitlabs.taptracker.presenters;
 
-import android.text.TextUtils;
+import android.support.annotation.NonNull;
 
 public class NewTaskPresenter {
     public interface View {
@@ -15,12 +15,12 @@ public class NewTaskPresenter {
     public NewTaskPresenter() {
     }
 
-    public void setView(View view) {
+    public void setView(@NonNull View view) {
         this.view = view;
     }
 
     public void onSaveButtonClicked(String taskName) {
-        if (TextUtils.isEmpty(taskName)) {
+        if (taskName == null || taskName.equals("")) {
             view.setResultCanceledAndFinish();
         } else {
             view.setResultOkAndFinish(taskName);

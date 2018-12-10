@@ -1,6 +1,7 @@
 package com.detroitlabs.taptracker.presenters;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 
 import com.detroitlabs.taptracker.views.NewTaskActivity;
 import com.detroitlabs.taptracker.models.Task;
@@ -11,9 +12,9 @@ public class MainPresenter {
     public interface View {
         void startNewTaskActivity(int requestCode);
 
-        void update(Task item);
+        void update(@NonNull Task item);
 
-        void insert(Task task);
+        void insert(@NonNull Task task);
 
         void showEmptyTaskErrorDialog();
     }
@@ -33,7 +34,7 @@ public class MainPresenter {
         view.startNewTaskActivity(NEW_TASK_ACTIVITY_REQUEST_CODE);
     }
 
-    public void onTaskItemClicked(Task item) {
+    public void onTaskItemClicked(@NonNull Task item) {
         item.touch();
         item.DEBUG__logHistory();
         view.update(item);

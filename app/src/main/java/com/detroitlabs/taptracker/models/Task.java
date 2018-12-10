@@ -9,6 +9,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Entity(tableName = "task_table")
 public class Task {
@@ -53,6 +54,19 @@ public class Task {
             history.add(lastCompletedTime);
         }
         lastCompletedTime = new Date();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task1 = (Task) o;
+        return Objects.equals(task, task1.task);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(task);
     }
 
     // for testing
