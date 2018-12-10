@@ -1,4 +1,4 @@
-package com.detroitlabs.taptracker;
+package com.detroitlabs.taptracker.views;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -15,50 +15,60 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.detroitlabs.taptracker.data.Task;
-import com.detroitlabs.taptracker.data.TaskListAdapter;
-import com.detroitlabs.taptracker.data.TaskViewModel;
+import com.detroitlabs.taptracker.R;
+import com.detroitlabs.taptracker.models.Task;
+import com.detroitlabs.taptracker.models.TaskListAdapter;
+import com.detroitlabs.taptracker.models.TaskViewModel;
+import com.detroitlabs.taptracker.presenters.MainPresenter;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
-
-    public static final int NEW_TASK_ACTIVITY_REQUEST_CODE = 1;
+public class MainActivity extends AppCompatActivity implements MainPresenter.View {
 
     private TaskViewModel mTaskViewModel;
+
+    private MainPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setupPresenter();
+        setupViews();
+    }
+
+    private void setupPresenter() {
+        presenter = new MainPresenter();
+        presenter.setView(this);
+    }
+
+    private void setupViews() {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = findViewById(R.id.fab);
+        RecyclerView recyclerView = findViewById(R.id.recyclerview);
+        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
+        final TaskListAdapter adapter = new TaskListAdapter(this);
+        mTaskViewModel = ViewModelProviders.of(this).get(TaskViewModel.class);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, NewTaskActivity.class);
-                startActivityForResult(intent, NEW_TASK_ACTIVITY_REQUEST_CODE);
+                presenter.onNewTaskButtonClicked();
             }
         });
 
-        RecyclerView recyclerView = findViewById(R.id.recyclerview);
-        final TaskListAdapter adapter = new TaskListAdapter(this);
         adapter.setOnItemClickListener(new TaskListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Task item) {
-                item.touch();
-                mTaskViewModel.update(item);
-                item.DEBUG__logHistory();
+                presenter.onTaskItemClicked(item);
             }
         });
         recyclerView.setAdapter(adapter);
-
-        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
 
-        mTaskViewModel = ViewModelProviders.of(this).get(TaskViewModel.class);
         mTaskViewModel.getAllTasks().observe(this, new Observer<List<Task>>() {
             @Override
             public void onChanged(@Nullable final List<Task> tasks) {
@@ -66,6 +76,30 @@ public class MainActivity extends AppCompatActivity {
                 adapter.setTasks(tasks);
             }
         });
+    }
+
+    @Override
+    public void startNewTaskActivity(int requestCode) {
+        Intent intent = new Intent(MainActivity.this, NewTaskActivity.class);
+        startActivityForResult(intent, requestCode);
+    }
+
+    @Override
+    public void update(Task item) {
+        mTaskViewModel.update(item);
+    }
+
+    @Override
+    public void insert(Task task) {
+        mTaskViewModel.insert(task);
+    }
+
+    @Override
+    public void showEmptyTaskErrorDialog() {
+        Toast.makeText(
+                getApplicationContext(),
+                R.string.empty_not_saved,
+                Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -90,17 +124,10 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == NEW_TASK_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
-            Task task = new Task(data.getStringExtra(NewTaskActivity.EXTRA_REPLY));
-            mTaskViewModel.insert(task);
-        } else {
-            Toast.makeText(
-                    getApplicationContext(),
-                    R.string.empty_not_saved,
-                    Toast.LENGTH_LONG).show();
-        }
+        presenter.handleOnActivityResult(resultCode, resultCode, data);
     }
 }

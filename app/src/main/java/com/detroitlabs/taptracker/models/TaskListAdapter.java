@@ -1,4 +1,4 @@
-package com.detroitlabs.taptracker.data;
+package com.detroitlabs.taptracker.models;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

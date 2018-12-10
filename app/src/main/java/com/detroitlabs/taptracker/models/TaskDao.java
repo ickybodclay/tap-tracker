@@ -1,4 +1,4 @@
-package com.detroitlabs.taptracker.data;
+package com.detroitlabs.taptracker.models;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
