@@ -18,7 +18,6 @@ import android.widget.Toast;
 
 import com.detroitlabs.taptracker.R;
 import com.detroitlabs.taptracker.models.Task;
-import com.detroitlabs.taptracker.models.TaskListAdapter;
 import com.detroitlabs.taptracker.models.TaskViewModel;
 import com.detroitlabs.taptracker.presenters.MainPresenter;
 
@@ -66,6 +65,12 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
             public void onItemClick(Task item) {
                 presenter.onTaskItemClicked(item);
             }
+
+            @Override
+            public boolean onItemLongClick(Task item) {
+                presenter.onTaskItemLongClicked(item);
+                return true;
+            }
         });
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(layoutManager);
@@ -100,6 +105,14 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
         Toast.makeText(
                 getApplicationContext(),
                 R.string.empty_not_saved,
+                Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showDetailsToast(@NonNull String details) {
+        Toast.makeText(
+                getApplicationContext(),
+                details,
                 Toast.LENGTH_LONG).show();
     }
 

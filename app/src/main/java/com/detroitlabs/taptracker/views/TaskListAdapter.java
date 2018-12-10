@@ -1,4 +1,4 @@
-package com.detroitlabs.taptracker.models;
+package com.detroitlabs.taptracker.views;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.detroitlabs.taptracker.R;
+import com.detroitlabs.taptracker.models.Task;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -37,15 +38,29 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
                     notifyDataSetChanged();
                 }
             });
+
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    boolean handled = listener.onItemLongClick(item);
+                    if (handled) {
+                        notifyDataSetChanged();
+                    }
+                    return handled;
+                }
+            });
         }
     }
 
     public interface OnItemClickListener {
         void onItemClick(Task item);
+
+        boolean onItemLongClick(Task item);
     }
 
     private final LayoutInflater mInflater;
     private List<Task> mTasks; // Cached copy of Tasks
+    private SimpleDateFormat timeFormat = new SimpleDateFormat("MM-dd h:mm a", Locale.US);
     private OnItemClickListener onItemClickListener;
 
     public TaskListAdapter(Context context) { mInflater = LayoutInflater.from(context); }
@@ -71,7 +86,6 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
         }
     }
 
-    private SimpleDateFormat timeFormat = new SimpleDateFormat("MM-dd h:mm a", Locale.US);
     private String formatLastTime(Date lastTime) {
         if (lastTime == null) {
             return "Never";

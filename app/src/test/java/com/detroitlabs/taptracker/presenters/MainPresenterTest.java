@@ -10,6 +10,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
+import java.time.Instant;
+import java.time.Period;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import static com.detroitlabs.taptracker.presenters.MainPresenter.NEW_TASK_ACTIVITY_REQUEST_CODE;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -28,6 +34,36 @@ public class MainPresenterTest {
         initMocks(this);
         subject = new MainPresenter();
         subject.setView(mockView);
+    }
+
+    @Test
+    public void onTaskItemClicked_should_handle_no_history() {
+        String testTaskName = "test task";
+        Task test = new Task(testTaskName);
+        subject.onTaskItemClicked(test);
+
+        verify(mockView).showDetailsToast(eq(subject.formatTaskHistory(test)));
+    }
+
+    @Test
+    public void onTaskItemClicked_should_handle_not_display_more_than_max_history() {
+        String testTaskName = "test task";
+        List<Date> testHistory = new ArrayList<>();
+        Date testDate1 = Date.from(Instant.EPOCH);
+        Date testDate2 = Date.from(testDate1.toInstant().plus(Period.ofDays(1)));
+        Date testDate3 = Date.from(testDate1.toInstant().plus(Period.ofDays(2)));
+
+        testHistory.add(testDate3);
+        testHistory.add(testDate2);
+        testHistory.add(testDate1);
+
+        Task test = mock(Task.class);
+        when(test.getTask()).thenReturn(testTaskName);
+        when(test.getHistory()).thenReturn(testHistory);
+
+        subject.onTaskItemClicked(test);
+
+        verify(mockView).showDetailsToast(eq(subject.formatTaskHistory(test)));
     }
 
     @Test

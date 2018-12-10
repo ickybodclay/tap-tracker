@@ -4,7 +4,6 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -51,7 +50,7 @@ public class Task {
 
     public void touch() {
         if (lastCompletedTime != null) {
-            history.add(lastCompletedTime);
+            history.add(0, lastCompletedTime);
         }
         lastCompletedTime = new Date();
     }
@@ -67,14 +66,5 @@ public class Task {
     @Override
     public int hashCode() {
         return Objects.hash(task);
-    }
-
-    // for testing
-    private static final String TAG = Task.class.getName();
-    public void DEBUG__logHistory() {
-        Log.d(TAG, String.format("History for \'%s\'", task));
-        for (Date d : history) {
-            Log.d(TAG, "\t> " + d.toString());
-        }
     }
 }
