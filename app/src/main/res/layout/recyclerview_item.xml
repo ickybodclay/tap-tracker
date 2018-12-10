@@ -4,18 +4,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="3dp"
     android:background="@android:color/holo_orange_light"
+    android:paddingLeft="5dp"
     android:paddingTop="20dp"
+    android:paddingRight="5dp"
     android:paddingBottom="20dp">
 
     <TextView
         android:id="@+id/textView"
         style="@style/task_title"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:textAlignment="viewStart"
-        app:layout_constraintEnd_toStartOf="@+id/lastTimeView"
+        app:layout_constraintBottom_toTopOf="@+id/lastTimeView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="@tools:sample/lorem" />
 
     <TextView
@@ -23,11 +31,15 @@
         style="@style/task_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:textAlignment="textEnd"
+        android:textAlignment="center"
         android:textStyle="italic"
-        app:layout_constraintBaseline_toBaselineOf="@+id/textView"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
         tools:text="@tools:sample/date/mmddyy" />
 
 </android.support.constraint.ConstraintLayout>

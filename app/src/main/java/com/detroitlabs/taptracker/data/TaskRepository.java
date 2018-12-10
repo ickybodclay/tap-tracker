@@ -29,7 +29,6 @@ public class TaskRepository {
     }
 
     private static class insertAsyncTask extends AsyncTask<Task, Void, Void> {
-
         private TaskDao mAsyncTaskDao;
 
         insertAsyncTask(TaskDao dao) {
@@ -44,7 +43,6 @@ public class TaskRepository {
     }
 
     private static class updateAsyncTask extends AsyncTask<Task, Void, Void> {
-
         private TaskDao mAsyncTaskDao;
 
         updateAsyncTask(TaskDao dao) {
