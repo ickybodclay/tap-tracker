@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -22,6 +23,7 @@ import com.detroitlabs.taptracker.models.TaskViewModel;
 import com.detroitlabs.taptracker.presenters.MainPresenter;
 
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements MainPresenter.View {
 
@@ -109,11 +111,14 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
     }
 
     @Override
-    public void showDetailsToast(@NonNull String details) {
-        Toast.makeText(
-                getApplicationContext(),
-                details,
-                Toast.LENGTH_LONG).show();
+    public void showDetailsDialog(@NonNull String task, @NonNull String[] formattedDates) {
+        AlertDialog.Builder builder =
+                new AlertDialog.Builder(this)
+                        .setTitle(String.format("Recent history for \'%s\'", task))
+                        .setItems(formattedDates, null)
+                        .setCancelable(true);
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     @Override

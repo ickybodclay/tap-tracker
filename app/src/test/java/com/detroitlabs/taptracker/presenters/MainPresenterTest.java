@@ -42,7 +42,7 @@ public class MainPresenterTest {
         Task test = new Task(testTaskName);
         subject.onTaskItemClicked(test);
 
-        verify(mockView).showDetailsToast(eq(subject.formatTaskHistory(test)));
+        verify(mockView).showDetailsDialog(eq(testTaskName), eq(new String[] { "No recent history" }));
     }
 
     @Test
@@ -63,7 +63,8 @@ public class MainPresenterTest {
 
         subject.onTaskItemClicked(test);
 
-        verify(mockView).showDetailsToast(eq(subject.formatTaskHistory(test)));
+        String[] expectedHistory = new String[] { "01-02 7:00 PM", "01-01 7:00 PM", "12-31 7:00 PM" };
+        verify(mockView).showDetailsDialog(eq(testTaskName), eq(expectedHistory));
     }
 
     @Test

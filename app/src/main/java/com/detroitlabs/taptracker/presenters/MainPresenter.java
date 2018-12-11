@@ -4,8 +4,8 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
-import com.detroitlabs.taptracker.views.NewTaskActivity;
 import com.detroitlabs.taptracker.models.Task;
+import com.detroitlabs.taptracker.views.NewTaskActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,7 +24,7 @@ public class MainPresenter {
 
         void showEmptyTaskErrorDialog();
 
-        void showDetailsToast(@NonNull String details);
+        void showDetailsDialog(@NonNull String task, @NonNull String[] formattedDates);
     }
 
     public static final int NEW_TASK_ACTIVITY_REQUEST_CODE = 1;
@@ -46,32 +46,25 @@ public class MainPresenter {
     }
 
     public void onTaskItemClicked(@NonNull Task task) {
-        view.showDetailsToast(formatTaskHistory(task));
+        view.showDetailsDialog(task.getTask(), formatHistory(task));
     }
 
     @VisibleForTesting
-    String formatTaskHistory(@NonNull Task task) {
-        StringBuilder builder = new StringBuilder();
+    String[] formatHistory(@NonNull Task task) {
         if (task.getHistory().isEmpty()) {
-            builder.append("No history available for \'");
-            builder.append(task.getTask());
-            builder.append("\'");
+            return new String[] { "No recent history" };
         }
-        else {
-            builder.append("History for \'");
-            builder.append(task.getTask());
-            builder.append("\':\n\n");
-            int i = 0;
-            for(Date d : task.getHistory()) {
-                if (i >= MAX_HISTORY) {
-                    break;
-                }
-                builder.append(timeFormat.format(d));
-                builder.append("\n");
-                ++i;
-            }
+        String[] formattedHistory = new String[
+                task.getHistory().size() > MAX_HISTORY ? MAX_HISTORY : task.getHistory().size()];
+        for (int i = 0; i < formattedHistory.length; ++i) {
+            formattedHistory[i] = formatDate(task.getHistory().get(i));
         }
-        return builder.toString();
+        return formattedHistory;
+    }
+
+    @VisibleForTesting
+    String formatDate(@NonNull Date date) {
+        return timeFormat.format(date);
     }
 
     public void onTaskItemLongClicked(@NonNull Task item) {

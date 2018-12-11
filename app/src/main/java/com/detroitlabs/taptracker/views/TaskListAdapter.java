@@ -28,7 +28,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
             lastTimeTextView = itemView.findViewById(R.id.lastTimeView);
         }
 
-        public void bind(final Task item, final OnItemClickListener listener) {
+        void bind(final Task item, final OnItemClickListener listener) {
             if (listener == null) return;
 
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -63,7 +63,9 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
     private SimpleDateFormat timeFormat = new SimpleDateFormat("MM-dd h:mm a", Locale.US);
     private OnItemClickListener onItemClickListener;
 
-    public TaskListAdapter(Context context) { mInflater = LayoutInflater.from(context); }
+    public TaskListAdapter(Context context) {
+        mInflater = LayoutInflater.from(context);
+    }
 
     @NonNull
     @Override
