@@ -2,7 +2,6 @@ package com.detroitlabs.taptracker.utils;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
-import android.util.Log;
 
 import java.text.SimpleDateFormat;
 import java.time.Clock;

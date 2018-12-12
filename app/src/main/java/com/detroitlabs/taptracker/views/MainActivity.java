@@ -4,6 +4,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -27,6 +28,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements MainPresenter.View {
 
     private TaskViewModel mTaskViewModel;
+    private TaskListAdapter mAdapter;
 
     private MainPresenter presenter;
 
@@ -51,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
         FloatingActionButton fab = findViewById(R.id.fab);
         RecyclerView recyclerView = findViewById(R.id.recyclerview);
         StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
-        final TaskListAdapter adapter = new TaskListAdapter(this);
+        mAdapter = new TaskListAdapter(this);
         mTaskViewModel = ViewModelProviders.of(this).get(TaskViewModel.class);
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -61,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
             }
         });
 
-        adapter.setOnItemClickListener(new TaskListAdapter.OnItemClickListener() {
+        mAdapter.setOnItemClickListener(new TaskListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Task item) {
                 presenter.onTaskItemClicked(item);
@@ -73,16 +75,36 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
                 return true;
             }
         });
-        recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(layoutManager);
 
         mTaskViewModel.getAllTasks().observe(this, new Observer<List<Task>>() {
             @Override
             public void onChanged(@Nullable final List<Task> tasks) {
                 // Update the cached copy of the words in the adapter.
-                adapter.setTasks(tasks);
+                mAdapter.setTasks(tasks);
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        refreshAdapterOnInterval();
+    }
+
+    private void refreshAdapterOnInterval() {
+        final long intervalInMs = 1000L;
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                mAdapter.notifyDataSetChanged();
+                handler.postDelayed(this, intervalInMs);
+            }
+        }, intervalInMs);
     }
 
     @Override

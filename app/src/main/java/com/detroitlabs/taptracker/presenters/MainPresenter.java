@@ -8,8 +8,6 @@ import com.detroitlabs.taptracker.models.Task;
 import com.detroitlabs.taptracker.utils.DateFormatUtil;
 import com.detroitlabs.taptracker.views.NewTaskActivity;
 
-import java.util.Date;
-
 import static android.app.Activity.RESULT_OK;
 
 public class MainPresenter {
