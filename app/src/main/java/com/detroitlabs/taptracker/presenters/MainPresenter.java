@@ -8,6 +8,8 @@ import com.detroitlabs.taptracker.models.Task;
 import com.detroitlabs.taptracker.utils.DateFormatUtil;
 import com.detroitlabs.taptracker.views.NewTaskActivity;
 
+import java.util.Date;
+
 import static android.app.Activity.RESULT_OK;
 
 public class MainPresenter {
@@ -50,6 +52,7 @@ public class MainPresenter {
         if (task.getHistory().isEmpty()) {
             return new String[]{"No recent history"};
         }
+
         String[] formattedHistory = new String[
                 task.getHistory().size() > MAX_HISTORY ? MAX_HISTORY : task.getHistory().size()];
         for (int i = 0; i < formattedHistory.length; ++i) {
