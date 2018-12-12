@@ -50,20 +50,10 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //FloatingActionButton fab = findViewById(R.id.fab);
         RecyclerView recyclerView = findViewById(R.id.recyclerview);
         StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
         mAdapter = new TaskListAdapter(this);
         mTaskViewModel = ViewModelProviders.of(this).get(TaskViewModel.class);
-
-        /*
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                presenter.onNewTaskButtonClicked();
-            }
-        });
-        */
 
         mAdapter.setOnItemClickListener(new TaskListAdapter.OnItemClickListener() {
             @Override
@@ -111,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
 
     @Override
     public void startNewTaskActivity(int requestCode) {
-        Intent intent = new Intent(MainActivity.this, NewTaskActivity.class);
+        Intent intent = new Intent(this, NewTaskActivity.class);
         startActivityForResult(intent, requestCode);
     }
 
@@ -171,6 +161,6 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        presenter.handleOnActivityResult(resultCode, resultCode, data);
+        presenter.handleOnActivityResult(requestCode, resultCode, data);
     }
 }
