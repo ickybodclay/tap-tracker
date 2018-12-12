@@ -20,11 +20,11 @@ public class TaskRepository {
         return mAllTasks;
     }
 
-    public void insert (Task task) {
+    public void insert(Task task) {
         new insertAsyncTask(mTaskDao).execute(task);
     }
 
-    public void update (Task task) {
+    public void update(Task task) {
         new updateAsyncTask(mTaskDao).execute(task);
     }
 
