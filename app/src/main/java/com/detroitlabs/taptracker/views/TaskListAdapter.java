@@ -2,6 +2,7 @@ package com.detroitlabs.taptracker.views;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,11 +11,10 @@ import android.widget.TextView;
 
 import com.detroitlabs.taptracker.R;
 import com.detroitlabs.taptracker.models.Task;
+import com.detroitlabs.taptracker.utils.DateFormatUtil;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskViewHolder> {
 
@@ -60,7 +60,6 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
 
     private final LayoutInflater mInflater;
     private List<Task> mTasks; // Cached copy of Tasks
-    private SimpleDateFormat timeFormat = new SimpleDateFormat("MM-dd h:mm a", Locale.US);
     private OnItemClickListener onItemClickListener;
 
     public TaskListAdapter(Context context) {
@@ -88,18 +87,11 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
         }
     }
 
-    private String formatLastTime(Date lastTime) {
+    private String formatLastTime(@Nullable Date lastTime) {
         if (lastTime == null) {
             return "Never";
         }
-
-        // TODO format time based on how long ago it was
-        // if < 1 min ex. 30 secs ago
-        // if < 1 hour ex 6 mins ago
-        // if < 24 hour ex. Today 6:30pm
-        // else ex. 7/18 6:30pm
-
-        return timeFormat.format(lastTime);
+        return DateFormatUtil.formatDate(lastTime);
     }
 
     public void setTasks(List<Task> Tasks) {

@@ -23,7 +23,6 @@ import com.detroitlabs.taptracker.models.TaskViewModel;
 import com.detroitlabs.taptracker.presenters.MainPresenter;
 
 import java.util.List;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements MainPresenter.View {
 
@@ -133,12 +132,12 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        //int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+        //if (id == R.id.action_settings) {
+        //    return true;
+        //}
 
         return super.onOptionsItemSelected(item);
     }

@@ -5,11 +5,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
 import com.detroitlabs.taptracker.models.Task;
+import com.detroitlabs.taptracker.utils.DateFormatUtil;
 import com.detroitlabs.taptracker.views.NewTaskActivity;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -30,7 +27,6 @@ public class MainPresenter {
     public static final int NEW_TASK_ACTIVITY_REQUEST_CODE = 1;
 
     private static final int MAX_HISTORY = 10;
-    private SimpleDateFormat timeFormat = new SimpleDateFormat("MM-dd h:mm a", Locale.US);
 
     private View view;
 
@@ -52,19 +48,14 @@ public class MainPresenter {
     @VisibleForTesting
     String[] formatHistory(@NonNull Task task) {
         if (task.getHistory().isEmpty()) {
-            return new String[] { "No recent history" };
+            return new String[]{"No recent history"};
         }
         String[] formattedHistory = new String[
                 task.getHistory().size() > MAX_HISTORY ? MAX_HISTORY : task.getHistory().size()];
         for (int i = 0; i < formattedHistory.length; ++i) {
-            formattedHistory[i] = formatDate(task.getHistory().get(i));
+            formattedHistory[i] = DateFormatUtil.formatDate(task.getHistory().get(i));
         }
         return formattedHistory;
-    }
-
-    @VisibleForTesting
-    String formatDate(@NonNull Date date) {
-        return timeFormat.format(date);
     }
 
     public void onTaskItemLongClicked(@NonNull Task item) {
