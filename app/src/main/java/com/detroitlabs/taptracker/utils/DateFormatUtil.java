@@ -56,7 +56,7 @@ public final class DateFormatUtil {
         } else if (now.isBefore(then.plus(60, ChronoUnit.MINUTES))) {
             long gapMinutes = ChronoUnit.MINUTES.between(then, now);
             return gapMinutes + " mins ago";
-        } else if (now.isBefore(then.plus(24, ChronoUnit.HOURS))) {
+        } else if (now.isBefore(then.truncatedTo(ChronoUnit.DAYS).plus(1, ChronoUnit.DAYS))) {
             return "Today " + currentDayTimeFormat.format(dateToFormat);
         }
         return pastDaytimeFormat.format(dateToFormat);
