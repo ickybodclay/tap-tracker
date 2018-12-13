@@ -53,22 +53,22 @@ public class Task {
     }
 
     public void setLastCompletedTime(Date lastCompletedTime) {
+        if (lastCompletedTime != null) {
+            history.add(0, lastCompletedTime);
+        }
         this.lastCompletedTime = lastCompletedTime;
-    }
-
-    public List<Date> getHistory() {
-        return history;
     }
 
     public void setHistory(List<Date> history) {
         this.history = history;
     }
 
+    public List<Date> getHistory() {
+        return history;
+    }
+
     public void touch() {
-        if (lastCompletedTime != null) {
-            history.add(0, lastCompletedTime);
-        }
-        lastCompletedTime = new Date();
+        setLastCompletedTime(new Date());
     }
 
     @Override

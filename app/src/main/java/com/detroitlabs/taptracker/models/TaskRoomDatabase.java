@@ -16,11 +16,17 @@
 
 package com.detroitlabs.taptracker.models;
 
+import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.arch.persistence.room.TypeConverters;
 import android.content.Context;
+import android.os.AsyncTask;
+import android.support.annotation.NonNull;
+
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
 @Database(entities = {Task.class}, version = 1)
 @TypeConverters({Converters.class})
@@ -35,10 +41,50 @@ public abstract class TaskRoomDatabase extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             TaskRoomDatabase.class, "task_database")
+                            //.addCallback(fillDemoDatabaseCallback)
                             .build();
                 }
             }
         }
         return INSTANCE;
+    }
+
+    /**
+     *  This callback is for populating a fresh install with demo data.  It's main use is as
+     *  convenience method for updating promo videos and marketing materials.
+     */
+    @SuppressWarnings("unused")
+    private static RoomDatabase.Callback fillDemoDatabaseCallback =
+            new RoomDatabase.Callback(){
+                @Override
+                public void onOpen (@NonNull SupportSQLiteDatabase db){
+                    super.onOpen(db);
+                    new PopulateDemoDbAsync(INSTANCE).execute();
+                }
+            };
+
+    private static class PopulateDemoDbAsync extends AsyncTask<Void, Void, Void> {
+        private final TaskDao mDao;
+
+        PopulateDemoDbAsync(TaskRoomDatabase db) {
+            mDao = db.taskDao();
+        }
+
+        @Override
+        protected Void doInBackground(final Void... params) {
+            mDao.deleteAll();
+
+            Date now = new Date();
+
+            Task task = new Task("Take Daily Vitamin");
+            task.setLastCompletedTime(new Date(now.toInstant().minus(5, ChronoUnit.MINUTES).toEpochMilli()));
+            mDao.insert(task);
+
+            task = new Task("Get oil change");
+            task.setLastCompletedTime(new Date(now.toInstant().minus(5, ChronoUnit.MONTHS).toEpochMilli()));
+            mDao.insert(task);
+
+            return null;
+        }
     }
 }
