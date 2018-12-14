@@ -38,18 +38,13 @@ public final class DateFormatUtil {
     }
 
     @VisibleForTesting
-    private static Clock getClock() {
-        return clock;
-    }
-
-    @VisibleForTesting
-    static void setClock(Clock clock) {
+    static void setClock(@NonNull Clock clock) {
         DateFormatUtil.clock = clock;
     }
 
     public static String formatDate(@NonNull Date dateToFormat) {
         Instant then = dateToFormat.toInstant();
-        Instant now = Instant.now(getClock());
+        Instant now = Instant.now(clock);
         if (now.isBefore(then.plusSeconds(60))) {
             long gapSeconds = ChronoUnit.SECONDS.between(then, now);
             return gapSeconds + " secs ago";
@@ -59,6 +54,13 @@ public final class DateFormatUtil {
         } else if (now.isBefore(then.truncatedTo(ChronoUnit.DAYS).plus(1, ChronoUnit.DAYS))) {
             return "Today " + currentDayTimeFormat.format(dateToFormat);
         }
+        // add Yesterday
+        // add 2-7 days ago
+        // add Last Week
+        // add a month ago
+        // add 1-11 months ago
+        // add a year ago
+        // add 2-9 years ago
         return pastDaytimeFormat.format(dateToFormat);
     }
 }

@@ -77,11 +77,22 @@ public abstract class TaskRoomDatabase extends RoomDatabase {
             Date now = new Date();
 
             Task task = new Task("Take Daily Vitamin");
+            task.setLastCompletedTime(new Date(now.toInstant().minus(4, ChronoUnit.DAYS).toEpochMilli()));
+            task.setLastCompletedTime(new Date(now.toInstant().minus(3, ChronoUnit.DAYS).toEpochMilli()));
+            task.setLastCompletedTime(new Date(now.toInstant().minus(2, ChronoUnit.DAYS).toEpochMilli()));
+            task.setLastCompletedTime(new Date(now.toInstant().minus(1, ChronoUnit.DAYS).toEpochMilli()));
             task.setLastCompletedTime(new Date(now.toInstant().minus(5, ChronoUnit.MINUTES).toEpochMilli()));
             mDao.insert(task);
 
-            task = new Task("Get oil change");
-            task.setLastCompletedTime(new Date(now.toInstant().minus(5, ChronoUnit.MONTHS).toEpochMilli()));
+            task = new Task("Get Oil Change");
+            task.setLastCompletedTime(new Date(now.toInstant().minus(22 * 30, ChronoUnit.DAYS).toEpochMilli()));
+            task.setLastCompletedTime(new Date(now.toInstant().minus(16 * 30, ChronoUnit.DAYS).toEpochMilli()));
+            task.setLastCompletedTime(new Date(now.toInstant().minus(12 * 30, ChronoUnit.DAYS).toEpochMilli()));
+            task.setLastCompletedTime(new Date(now.toInstant().minus(5 * 30, ChronoUnit.DAYS).toEpochMilli()));
+            mDao.insert(task);
+
+            task = new Task("Change Water Filter");
+            task.setLastCompletedTime(new Date(now.toInstant().minus(30, ChronoUnit.DAYS).toEpochMilli()));
             mDao.insert(task);
 
             return null;

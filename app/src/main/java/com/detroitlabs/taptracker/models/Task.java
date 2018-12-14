@@ -52,14 +52,12 @@ public class Task {
         return lastCompletedTime;
     }
 
-    public void setLastCompletedTime(Date lastCompletedTime) {
-        if (lastCompletedTime != null) {
-            history.add(0, lastCompletedTime);
-        }
+    public void setLastCompletedTime(@NonNull Date lastCompletedTime) {
         this.lastCompletedTime = lastCompletedTime;
+        this.history.add(0, lastCompletedTime);
     }
 
-    public void setHistory(List<Date> history) {
+    public void setHistory(@NonNull List<Date> history) {
         this.history = history;
     }
 

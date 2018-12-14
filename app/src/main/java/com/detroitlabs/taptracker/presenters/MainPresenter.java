@@ -58,8 +58,13 @@ public class MainPresenter {
     }
 
     public void onTaskItemClicked(@NonNull Task task) {
+        // TODO change to calendar view
         view.showDetailsDialog(task.getTask(), formatHistory(task));
     }
+
+    // TODO fix hit area of a task
+
+    // TODO add ability to delete a task
 
     @VisibleForTesting
     String[] formatHistory(@NonNull Task task) {
