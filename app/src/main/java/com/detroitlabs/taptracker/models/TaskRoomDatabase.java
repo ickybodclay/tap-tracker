@@ -24,6 +24,7 @@ import android.arch.persistence.room.TypeConverters;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -41,7 +42,7 @@ public abstract class TaskRoomDatabase extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             TaskRoomDatabase.class, "task_database")
-                            //.addCallback(fillDemoDatabaseCallback)
+                            .addCallback(fillDemoDatabaseCallback) // FOR TESTING ONLY
                             .build();
                 }
             }
@@ -72,6 +73,10 @@ public abstract class TaskRoomDatabase extends RoomDatabase {
 
         @Override
         protected Void doInBackground(final Void... params) {
+            Log.w(TaskRoomDatabase.class.getName(), "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            Log.w(TaskRoomDatabase.class.getName(), "!!! FILL DEMO DATABASE CALLBACK IS ACTIVE !!!");
+            Log.w(TaskRoomDatabase.class.getName(), "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
             mDao.deleteAll();
 
             Date now = new Date();
@@ -92,6 +97,10 @@ public abstract class TaskRoomDatabase extends RoomDatabase {
             mDao.insert(task);
 
             task = new Task("Change Water Filter");
+            task.setLastCompletedTime(new Date(now.toInstant().minus(5 * 30, ChronoUnit.DAYS).toEpochMilli()));
+            task.setLastCompletedTime(new Date(now.toInstant().minus(4 * 30, ChronoUnit.DAYS).toEpochMilli()));
+            task.setLastCompletedTime(new Date(now.toInstant().minus(3 * 30, ChronoUnit.DAYS).toEpochMilli()));
+            task.setLastCompletedTime(new Date(now.toInstant().minus(2 * 30, ChronoUnit.DAYS).toEpochMilli()));
             task.setLastCompletedTime(new Date(now.toInstant().minus(30, ChronoUnit.DAYS).toEpochMilli()));
             mDao.insert(task);
 

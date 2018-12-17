@@ -22,4 +22,5 @@
     <string name="button_save">Save</string>
     <string name="empty_not_saved">Task not saved because it is empty.</string>
     <string name="action_add_task">Add Task</string>
+    <string name="no_task_history">No task history.</string>
 </resources>

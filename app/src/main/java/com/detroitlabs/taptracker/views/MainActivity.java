@@ -28,15 +28,28 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.applandeo.materialcalendarview.CalendarView;
+import com.applandeo.materialcalendarview.DatePicker;
+import com.applandeo.materialcalendarview.builders.DatePickerBuilder;
+import com.applandeo.materialcalendarview.listeners.OnSelectDateListener;
+import com.applandeo.materialcalendarview.utils.DateUtils;
 import com.detroitlabs.taptracker.R;
 import com.detroitlabs.taptracker.models.Task;
 import com.detroitlabs.taptracker.models.TaskViewModel;
 import com.detroitlabs.taptracker.presenters.MainPresenter;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoField;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MainPresenter.View {
@@ -138,14 +151,42 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
     }
 
     @Override
-    public void showDetailsDialog(@NonNull String task, @NonNull String[] formattedDates) {
-        AlertDialog.Builder builder =
-                new AlertDialog.Builder(this)
-                        .setTitle(String.format("Recent history for \'%s\'", task))
-                        .setItems(formattedDates, null)
-                        .setCancelable(true);
-        AlertDialog dialog = builder.create();
+    public void showHistoryDialog(@NonNull Task task) {
+        List<Calendar> selectedDays = getSelectedDays(task.getHistory());
+
+        DatePickerBuilder builder = new DatePickerBuilder(this, calendar -> presenter.onHistoryDateSelected(calendar))
+                .date((selectedDays.isEmpty()) ? null : selectedDays.get(0))
+                .headerColor(R.color.colorPrimaryDark)
+                .todayLabelColor(R.color.colorPrimary)
+                .pickerType(CalendarView.MANY_DAYS_PICKER)
+                .selectedDays(selectedDays);
+
+        DatePicker datePicker = builder.build();
+        datePicker.show();
+    }
+
+    @Override
+    public void showNoHistoryDialog(@NonNull Task task) {
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle(task.getTask())
+                .setMessage(R.string.no_task_history)
+                .create();
+
         dialog.show();
+    }
+
+    private List<Calendar> getSelectedDays(@NonNull List<Date> dateList) {
+        List<Calendar> calendars = new ArrayList<>();
+
+        Log.d(MainActivity.class.getName(), "Selected Days: ");
+        for (Date date : dateList) {
+            Log.d(MainActivity.class.getName(), "> " + date.toString());
+            Calendar calendar = DateUtils.getCalendar();
+            calendar.setTime(date);
+            calendars.add(calendar);
+        }
+
+        return calendars;
     }
 
     @Override

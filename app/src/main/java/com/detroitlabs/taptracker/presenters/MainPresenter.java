@@ -24,6 +24,9 @@ import com.detroitlabs.taptracker.models.Task;
 import com.detroitlabs.taptracker.utils.DateFormatUtil;
 import com.detroitlabs.taptracker.views.NewTaskActivity;
 
+import java.util.Calendar;
+import java.util.List;
+
 import static android.app.Activity.RESULT_OK;
 
 public class MainPresenter {
@@ -37,12 +40,12 @@ public class MainPresenter {
 
         void showEmptyTaskErrorDialog();
 
-        void showDetailsDialog(@NonNull String task, @NonNull String[] formattedDates);
+        void showHistoryDialog(@NonNull Task task);
+
+        void showNoHistoryDialog(@NonNull Task task);
     }
 
     public static final int NEW_TASK_ACTIVITY_REQUEST_CODE = 1;
-
-    private static final int MAX_HISTORY = 10;
 
     private View view;
 
@@ -57,32 +60,24 @@ public class MainPresenter {
         view.startNewTaskActivity(NEW_TASK_ACTIVITY_REQUEST_CODE);
     }
 
-    public void onTaskItemClicked(@NonNull Task task) {
-        // TODO change to calendar view
-        view.showDetailsDialog(task.getTask(), formatHistory(task));
-    }
-
-    // TODO fix hit area of a task
-
     // TODO add ability to delete a task
 
-    @VisibleForTesting
-    String[] formatHistory(@NonNull Task task) {
+    public void onTaskItemClicked(@NonNull Task task) {
         if (task.getHistory().isEmpty()) {
-            return new String[]{"No recent history"};
+            view.showNoHistoryDialog(task);
         }
-
-        String[] formattedHistory = new String[
-                task.getHistory().size() > MAX_HISTORY ? MAX_HISTORY : task.getHistory().size()];
-        for (int i = 0; i < formattedHistory.length; ++i) {
-            formattedHistory[i] = DateFormatUtil.formatDate(task.getHistory().get(i));
+        else {
+            view.showHistoryDialog(task);
         }
-        return formattedHistory;
     }
 
     public void onTaskItemLongClicked(@NonNull Task item) {
         item.touch();
         view.update(item);
+    }
+
+    public void onHistoryDateSelected(List<Calendar> calendar) {
+
     }
 
     public void handleOnActivityResult(int requestCode, int resultCode, Intent data) {

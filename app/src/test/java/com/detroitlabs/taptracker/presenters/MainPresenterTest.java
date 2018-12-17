@@ -56,13 +56,14 @@ public class MainPresenterTest {
     public void onTaskItemClicked_should_handle_no_history() {
         String testTaskName = "test task";
         Task test = new Task(testTaskName);
+
         subject.onTaskItemClicked(test);
 
-        verify(mockView).showDetailsDialog(eq(testTaskName), eq(new String[] { "No recent history" }));
+        verify(mockView).showNoHistoryDialog(test);
     }
 
     @Test
-    public void onTaskItemClicked_should_handle_not_display_more_than_max_history() {
+    public void onTaskItemClicked_should_handle_displaying_history() {
         String testTaskName = "test task";
         List<Date> testHistory = new ArrayList<>();
         Date testDate1 = Date.from(Instant.EPOCH);
@@ -79,8 +80,7 @@ public class MainPresenterTest {
 
         subject.onTaskItemClicked(test);
 
-        String[] expectedHistory = new String[] { "01-02 7:00 PM", "01-01 7:00 PM", "12-31 7:00 PM" };
-        verify(mockView).showDetailsDialog(eq(testTaskName), eq(expectedHistory));
+        verify(mockView).showHistoryDialog(test);
     }
 
     @Test
