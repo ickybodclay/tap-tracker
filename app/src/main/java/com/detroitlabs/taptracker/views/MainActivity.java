@@ -25,6 +25,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -34,25 +35,22 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.applandeo.materialcalendarview.CalendarView;
-import com.applandeo.materialcalendarview.DatePicker;
-import com.applandeo.materialcalendarview.builders.DatePickerBuilder;
-import com.applandeo.materialcalendarview.listeners.OnSelectDateListener;
+import com.applandeo.materialcalendarview.EventDay;
+import com.applandeo.materialcalendarview.exceptions.OutOfDateRangeException;
 import com.applandeo.materialcalendarview.utils.DateUtils;
 import com.detroitlabs.taptracker.R;
 import com.detroitlabs.taptracker.models.Task;
 import com.detroitlabs.taptracker.models.TaskViewModel;
 import com.detroitlabs.taptracker.presenters.MainPresenter;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements MainPresenter.View {
+    private static final String TAG = MainActivity.class.getName();
 
     private TaskViewModel mTaskViewModel;
     private TaskListAdapter mAdapter;
@@ -132,14 +130,20 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
         startActivityForResult(intent, requestCode);
     }
 
+
+    @Override
+    public void insert(@NonNull Task task) {
+        mTaskViewModel.insert(task);
+    }
+
     @Override
     public void update(@NonNull Task item) {
         mTaskViewModel.update(item);
     }
 
     @Override
-    public void insert(@NonNull Task task) {
-        mTaskViewModel.insert(task);
+    public void delete(@NonNull Task task) {
+        mTaskViewModel.delete(task);
     }
 
     @Override
@@ -151,42 +155,54 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
     }
 
     @Override
-    public void showHistoryDialog(@NonNull Task task) {
-        List<Calendar> selectedDays = getSelectedDays(task.getHistory());
-
-        DatePickerBuilder builder = new DatePickerBuilder(this, calendar -> presenter.onHistoryDateSelected(calendar))
-                .date((selectedDays.isEmpty()) ? null : selectedDays.get(0))
-                .headerColor(R.color.colorPrimaryDark)
-                .todayLabelColor(R.color.colorPrimary)
-                .pickerType(CalendarView.MANY_DAYS_PICKER)
-                .selectedDays(selectedDays);
-
-        DatePicker datePicker = builder.build();
-        datePicker.show();
-    }
-
-    @Override
-    public void showNoHistoryDialog(@NonNull Task task) {
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle(task.getTask())
-                .setMessage(R.string.no_task_history)
+    public void showTaskDetailsDialog(@NonNull Task task) {
+        final AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle(String.format("\'%s\' Details", task.getTask()))
+                .setView(R.layout.dialog_task_details)
                 .create();
-
         dialog.show();
+
+        List<EventDay> events = getEventDays(task.getHistory());
+
+        CalendarView calendarView = dialog.findViewById(R.id.calendarView);
+        AppCompatButton deleteButton = dialog.findViewById(R.id.deleteButton);
+        AppCompatButton closeButton = dialog.findViewById(R.id.closeButton);
+
+        if (task.getHistory().isEmpty()) {
+            try {
+                Objects.requireNonNull(calendarView).setDate(new Date());
+            } catch (OutOfDateRangeException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+        } else {
+            try {
+                Objects.requireNonNull(calendarView).setDate(events.get(0).getCalendar());
+            } catch (OutOfDateRangeException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+            Objects.requireNonNull(calendarView).setOnDayClickListener(eventDay -> presenter.onHistoryDateSelected(eventDay));
+            Objects.requireNonNull(calendarView).setEvents(events);
+        }
+
+        Objects.requireNonNull(deleteButton).setOnClickListener(view -> {
+            presenter.onDeleteTaskClicked(task);
+            dialog.cancel();
+        });
+        Objects.requireNonNull(closeButton).setOnClickListener(view -> dialog.cancel());
     }
 
-    private List<Calendar> getSelectedDays(@NonNull List<Date> dateList) {
-        List<Calendar> calendars = new ArrayList<>();
+    private List<EventDay> getEventDays(@NonNull List<Date> dateList) {
+        List<EventDay> events = new ArrayList<>();
 
         Log.d(MainActivity.class.getName(), "Selected Days: ");
         for (Date date : dateList) {
             Log.d(MainActivity.class.getName(), "> " + date.toString());
             Calendar calendar = DateUtils.getCalendar();
             calendar.setTime(date);
-            calendars.add(calendar);
+            events.add(new EventDay(calendar, R.drawable.ic_add_black_24dp));
         }
 
-        return calendars;
+        return events;
     }
 
     @Override

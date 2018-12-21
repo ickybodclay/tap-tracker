@@ -52,11 +52,7 @@ public class NewTaskActivity extends AppCompatActivity implements NewTaskPresent
         mEditTaskView = findViewById(R.id.edit_task);
 
         final Button button = findViewById(R.id.button_save);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                presenter.onSaveButtonClicked(mEditTaskView.getText().toString());
-            }
-        });
+        button.setOnClickListener(view -> presenter.onSaveButtonClicked(mEditTaskView.getText().toString()));
     }
 
     @Override
