@@ -82,16 +82,22 @@ public class MainPresenter {
     public void onHistoryDateSelected(@NonNull Task task, @NonNull EventDay eventDay) {
         Log.d(TAG, "Date selected = " + eventDay.getCalendar().toString());
         StringBuilder builder = new StringBuilder();
-        boolean first = true;
-        for (Date date : getTaskHistoryForDay(task, eventDay)) {
-            if (first) {
-                first = false;
-            }
-            else {
-                builder.append('\n');
-            }
+        List<Date> dayHistory = getTaskHistoryForDay(task, eventDay);
+        if (dayHistory.isEmpty()) {
+            builder.append("No task history for this date");
+        }
+        else {
+            boolean first = true;
+            for (Date date : dayHistory) {
+                if (first) {
+                    first = false;
+                }
+                else {
+                    builder.append('\n');
+                }
 
-            builder.append(DateFormatUtil.formatDate(date));
+                builder.append(DateFormatUtil.formatDate(date));
+            }
         }
         view.showDateToast(builder.toString());
     }
