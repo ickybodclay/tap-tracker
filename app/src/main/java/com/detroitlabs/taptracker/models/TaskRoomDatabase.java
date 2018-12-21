@@ -77,11 +77,22 @@ public abstract class TaskRoomDatabase extends RoomDatabase {
             Log.w(TaskRoomDatabase.class.getName(), "!!! FILL DEMO DATABASE CALLBACK IS ACTIVE !!!");
             Log.w(TaskRoomDatabase.class.getName(), "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
+            // NOTE: when adding new data to demo, keep in mind to add dates in ascending order
+
             mDao.deleteAll();
 
             Date now = new Date();
 
-            Task task = new Task("Take Daily Vitamin");
+            Task task = new Task("Drink Water");
+            task.setLastCompletedTime(new Date(now.toInstant().minus(30, ChronoUnit.MINUTES).toEpochMilli()));
+            task.setLastCompletedTime(new Date(now.toInstant().minus(25, ChronoUnit.MINUTES).toEpochMilli()));
+            task.setLastCompletedTime(new Date(now.toInstant().minus(20, ChronoUnit.MINUTES).toEpochMilli()));
+            task.setLastCompletedTime(new Date(now.toInstant().minus(15, ChronoUnit.MINUTES).toEpochMilli()));
+            task.setLastCompletedTime(new Date(now.toInstant().minus(10, ChronoUnit.MINUTES).toEpochMilli()));
+            task.setLastCompletedTime(new Date(now.toInstant().minus(5, ChronoUnit.MINUTES).toEpochMilli()));
+            mDao.insert(task);
+
+            task = new Task("Take Daily Vitamin");
             task.setLastCompletedTime(new Date(now.toInstant().minus(4, ChronoUnit.DAYS).toEpochMilli()));
             task.setLastCompletedTime(new Date(now.toInstant().minus(3, ChronoUnit.DAYS).toEpochMilli()));
             task.setLastCompletedTime(new Date(now.toInstant().minus(2, ChronoUnit.DAYS).toEpochMilli()));

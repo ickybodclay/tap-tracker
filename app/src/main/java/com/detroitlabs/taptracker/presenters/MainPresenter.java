@@ -25,7 +25,12 @@ import com.detroitlabs.taptracker.models.Task;
 import com.detroitlabs.taptracker.utils.DateFormatUtil;
 import com.detroitlabs.taptracker.views.NewTaskActivity;
 
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 import java.util.TimeZone;
 
 import static android.app.Activity.RESULT_OK;
@@ -74,11 +79,41 @@ public class MainPresenter {
         view.update(item);
     }
 
-    public void onHistoryDateSelected(EventDay day) {
-        Log.d(TAG, "Date selected = " + day.getCalendar().toString());
-        // FIXME this is broken, also need to find out if day actually has event
-        Calendar calendar = day.getCalendar();
-        view.showDateToast(DateFormatUtil.formatDate(calendar.getTime()));
+    public void onHistoryDateSelected(@NonNull Task task, @NonNull EventDay eventDay) {
+        Log.d(TAG, "Date selected = " + eventDay.getCalendar().toString());
+        StringBuilder builder = new StringBuilder();
+        boolean first = true;
+        for (Date date : getTaskHistoryForDay(task, eventDay)) {
+            if (first) {
+                first = false;
+            }
+            else {
+                builder.append('\n');
+            }
+
+            builder.append(DateFormatUtil.formatDate(date));
+        }
+        view.showDateToast(builder.toString());
+    }
+
+    /*
+     * This method is needed because for some reason EventDay zeros out time part of the calendar.
+     */
+    private List<Date> getTaskHistoryForDay(@NonNull Task task, @NonNull EventDay eventDay) {
+        // FIXME simplify this
+        // TODO limit entries to fit inside a toast message
+        List<Date> datesOnEventDay = new ArrayList<>();
+        Calendar dayCal = eventDay.getCalendar();
+        for (Date d : task.getHistory()) {
+            Calendar taskCal = Calendar.getInstance();
+            taskCal.setTime(d);
+            if (taskCal.get(Calendar.DAY_OF_MONTH) == dayCal.get(Calendar.DAY_OF_MONTH) &&
+                taskCal.get(Calendar.MONTH) == dayCal.get(Calendar.MONTH) &&
+                taskCal.get(Calendar.YEAR) == dayCal.get(Calendar.YEAR)) {
+                datesOnEventDay.add(d);
+            }
+        }
+        return datesOnEventDay;
     }
 
     public void onDeleteTaskClicked(@NonNull Task task) {

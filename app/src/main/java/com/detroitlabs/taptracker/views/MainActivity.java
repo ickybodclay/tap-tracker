@@ -37,7 +37,6 @@ import android.widget.Toast;
 import com.applandeo.materialcalendarview.CalendarView;
 import com.applandeo.materialcalendarview.EventDay;
 import com.applandeo.materialcalendarview.exceptions.OutOfDateRangeException;
-import com.applandeo.materialcalendarview.utils.DateUtils;
 import com.detroitlabs.taptracker.R;
 import com.detroitlabs.taptracker.models.Task;
 import com.detroitlabs.taptracker.models.TaskViewModel;
@@ -48,7 +47,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.TimeZone;
 
 public class MainActivity extends AppCompatActivity implements MainPresenter.View {
     private static final String TAG = MainActivity.class.getName();
@@ -181,7 +179,9 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
             } catch (OutOfDateRangeException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
-            Objects.requireNonNull(calendarView).setOnDayClickListener(eventDay -> presenter.onHistoryDateSelected(eventDay));
+            Objects.requireNonNull(calendarView).setOnDayClickListener(eventDay -> {
+                presenter.onHistoryDateSelected(task, eventDay);
+            });
             Objects.requireNonNull(calendarView).setEvents(events);
         }
 
@@ -202,8 +202,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
             calendar.setTime(date);
             Log.d(MainActivity.class.getName(), "~ " + calendar.toString());
             EventDay day = new EventDay(calendar, R.drawable.ic_check_green_24dp);
-            // FIXME EventDay constructor zeroes out the time part of the calendar
-            //day.getCalendar().setTime(date);
+            // NOTE: EventDay constructor zeroes out the time part of the calendar
             events.add(day);
         }
 
