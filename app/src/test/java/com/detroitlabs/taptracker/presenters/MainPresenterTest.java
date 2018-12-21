@@ -59,7 +59,7 @@ public class MainPresenterTest {
 
         subject.onTaskItemClicked(test);
 
-        verify(mockView).showNoHistoryDialog(test);
+        verify(mockView).showTaskDetailsDialog(test);
     }
 
     @Test

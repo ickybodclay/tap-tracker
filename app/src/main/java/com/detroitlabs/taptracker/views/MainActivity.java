@@ -48,6 +48,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.TimeZone;
 
 public class MainActivity extends AppCompatActivity implements MainPresenter.View {
     private static final String TAG = MainActivity.class.getName();
@@ -197,12 +198,22 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
         Log.d(MainActivity.class.getName(), "Selected Days: ");
         for (Date date : dateList) {
             Log.d(MainActivity.class.getName(), "> " + date.toString());
-            Calendar calendar = DateUtils.getCalendar();
+            Calendar calendar = Calendar.getInstance();
             calendar.setTime(date);
-            events.add(new EventDay(calendar, R.drawable.ic_add_black_24dp));
+            Log.d(MainActivity.class.getName(), "~ " + calendar.toString());
+            EventDay day = new EventDay(calendar, R.drawable.ic_check_green_24dp);
+            // FIXME EventDay constructor zeroes out the time part of the calendar
+            //day.getCalendar().setTime(date);
+            events.add(day);
         }
 
         return events;
+    }
+
+    @Override
+    public void showDateToast(String formattedDate) {
+        Toast.makeText(this, formattedDate, Toast.LENGTH_SHORT)
+                .show();
     }
 
     @Override

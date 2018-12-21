@@ -22,7 +22,11 @@ import android.util.Log;
 
 import com.applandeo.materialcalendarview.EventDay;
 import com.detroitlabs.taptracker.models.Task;
+import com.detroitlabs.taptracker.utils.DateFormatUtil;
 import com.detroitlabs.taptracker.views.NewTaskActivity;
+
+import java.util.Calendar;
+import java.util.TimeZone;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -40,6 +44,8 @@ public class MainPresenter {
         void showEmptyTaskErrorDialog();
 
         void showTaskDetailsDialog(@NonNull Task task);
+
+        void showDateToast(String formattedDate);
     }
 
     private static final String TAG = MainPresenter.class.getName();
@@ -70,6 +76,9 @@ public class MainPresenter {
 
     public void onHistoryDateSelected(EventDay day) {
         Log.d(TAG, "Date selected = " + day.getCalendar().toString());
+        // FIXME this is broken, also need to find out if day actually has event
+        Calendar calendar = day.getCalendar();
+        view.showDateToast(DateFormatUtil.formatDate(calendar.getTime()));
     }
 
     public void onDeleteTaskClicked(@NonNull Task task) {
