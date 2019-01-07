@@ -42,7 +42,7 @@ public abstract class TaskRoomDatabase extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             TaskRoomDatabase.class, "task_database")
-                            //.addCallback(fillDemoDatabaseCallback) // FOR TESTING ONLY
+                            .addCallback(fillDemoDatabaseCallback) // FOR TESTING ONLY
                             .build();
                 }
             }
@@ -78,6 +78,7 @@ public abstract class TaskRoomDatabase extends RoomDatabase {
             Log.w(TaskRoomDatabase.class.getName(), "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
             // NOTE: when adding new data to demo, keep in mind to add dates in ascending order
+            // TODO convert this test task db setup to config file that can be more easily updated
 
             mDao.deleteAll();
 
@@ -89,7 +90,7 @@ public abstract class TaskRoomDatabase extends RoomDatabase {
             task.setLastCompletedTime(new Date(now.toInstant().minus(20, ChronoUnit.MINUTES).toEpochMilli()));
             task.setLastCompletedTime(new Date(now.toInstant().minus(15, ChronoUnit.MINUTES).toEpochMilli()));
             task.setLastCompletedTime(new Date(now.toInstant().minus(10, ChronoUnit.MINUTES).toEpochMilli()));
-            task.setLastCompletedTime(new Date(now.toInstant().minus(5, ChronoUnit.MINUTES).toEpochMilli()));
+            task.setLastCompletedTime(new Date(now.toInstant().minus(61, ChronoUnit.MINUTES).toEpochMilli()));
             mDao.insert(task);
 
             task = new Task("Take Daily Vitamin");
@@ -98,6 +99,45 @@ public abstract class TaskRoomDatabase extends RoomDatabase {
             task.setLastCompletedTime(new Date(now.toInstant().minus(2, ChronoUnit.DAYS).toEpochMilli()));
             task.setLastCompletedTime(new Date(now.toInstant().minus(1, ChronoUnit.DAYS).toEpochMilli()));
             task.setLastCompletedTime(new Date(now.toInstant().minus(5, ChronoUnit.MINUTES).toEpochMilli()));
+            mDao.insert(task);
+
+            task = new Task("Cut Lawn");
+            task.setLastCompletedTime(new Date(now.toInstant().minus(21, ChronoUnit.DAYS).toEpochMilli()));
+            task.setLastCompletedTime(new Date(now.toInstant().minus(14, ChronoUnit.DAYS).toEpochMilli()));
+            task.setLastCompletedTime(new Date(now.toInstant().minus(7, ChronoUnit.DAYS).toEpochMilli()));
+            task.setLastCompletedTime(new Date(now.toInstant().minus(1, ChronoUnit.DAYS).toEpochMilli()));
+            mDao.insert(task);
+
+            task = new Task("Water Succulents");
+            task.setLastCompletedTime(new Date(now.toInstant().minus(3, ChronoUnit.DAYS).toEpochMilli()));
+            mDao.insert(task);
+
+            task = new Task("Washed Car");
+            task.setLastCompletedTime(new Date(now.toInstant().minus(8, ChronoUnit.DAYS).toEpochMilli()));
+            mDao.insert(task);
+
+            task = new Task("Clean Bathroom");
+            task.setLastCompletedTime(new Date(now.toInstant().minus(15, ChronoUnit.DAYS).toEpochMilli()));
+            mDao.insert(task);
+
+            task = new Task("Vacuum Home Office");
+            task.setLastCompletedTime(new Date(now.toInstant().minus(35, ChronoUnit.DAYS).toEpochMilli()));
+            mDao.insert(task);
+
+            task = new Task("Ate Turkey");
+            task.setLastCompletedTime(new Date(now.toInstant().minus(70, ChronoUnit.DAYS).toEpochMilli()));
+            mDao.insert(task);
+
+            task = new Task("Hosted a Party");
+            task.setLastCompletedTime(new Date(now.toInstant().minus(400, ChronoUnit.DAYS).toEpochMilli()));
+            mDao.insert(task);
+
+            task = new Task("Renewed Plates");
+            task.setLastCompletedTime(new Date(now.toInstant().minus(800, ChronoUnit.DAYS).toEpochMilli()));
+            mDao.insert(task);
+
+            task = new Task("Renewed License");
+            task.setLastCompletedTime(new Date(now.toInstant().minus(1200, ChronoUnit.DAYS).toEpochMilli()));
             mDao.insert(task);
 
             task = new Task("Get Oil Change");
