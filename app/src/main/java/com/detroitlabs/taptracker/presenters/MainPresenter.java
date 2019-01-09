@@ -16,6 +16,7 @@
 
 package com.detroitlabs.taptracker.presenters;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -25,13 +26,10 @@ import com.detroitlabs.taptracker.models.Task;
 import com.detroitlabs.taptracker.utils.DateFormatUtil;
 import com.detroitlabs.taptracker.views.NewTaskActivity;
 
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
-import java.util.TimeZone;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -51,6 +49,8 @@ public class MainPresenter {
         void showTaskDetailsDialog(@NonNull Task task);
 
         void showDateToast(String formattedDate);
+
+        Context getContext();
     }
 
     private static final String TAG = MainPresenter.class.getName();
@@ -58,12 +58,14 @@ public class MainPresenter {
     public static final int NEW_TASK_ACTIVITY_REQUEST_CODE = 1;
 
     private View view;
+    private DateFormatUtil dateFormatUtil;
 
     public MainPresenter() {
     }
 
     public void setView(View view) {
         this.view = view;
+        this.dateFormatUtil = new DateFormatUtil(view.getContext());
     }
 
     public void onNewTaskButtonClicked() {
@@ -96,7 +98,7 @@ public class MainPresenter {
                     builder.append('\n');
                 }
 
-                builder.append(DateFormatUtil.formatDate(date));
+                builder.append(dateFormatUtil.formatDate(date));
             }
         }
         view.showDateToast(builder.toString());

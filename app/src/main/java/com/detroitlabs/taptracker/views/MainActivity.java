@@ -16,13 +16,12 @@
 
 package com.detroitlabs.taptracker.views;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
@@ -94,13 +93,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(layoutManager);
 
-        mTaskViewModel.getAllTasks().observe(this, new Observer<List<Task>>() {
-            @Override
-            public void onChanged(@Nullable final List<Task> tasks) {
-                // Update the cached copy of the words in the adapter.
-                mAdapter.setTasks(tasks);
-            }
-        });
+        mTaskViewModel.getAllTasks().observe(this, tasks -> mAdapter.setTasks(tasks));
     }
 
     @Override
@@ -243,5 +236,10 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
         super.onActivityResult(requestCode, resultCode, data);
 
         presenter.handleOnActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public Context getContext() {
+        return getBaseContext();
     }
 }

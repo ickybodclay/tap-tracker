@@ -47,23 +47,17 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
         void bind(final Task item, final OnItemClickListener listener) {
             if (listener == null) return;
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    listener.onItemClick(item);
-                    notifyDataSetChanged();
-                }
+            itemView.setOnClickListener(view -> {
+                listener.onItemClick(item);
+                notifyDataSetChanged();
             });
 
-            itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    boolean handled = listener.onItemLongClick(item);
-                    if (handled) {
-                        notifyDataSetChanged();
-                    }
-                    return handled;
+            itemView.setOnLongClickListener(view -> {
+                boolean handled = listener.onItemLongClick(item);
+                if (handled) {
+                    notifyDataSetChanged();
                 }
+                return handled;
             });
         }
     }
@@ -77,9 +71,11 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
     private final LayoutInflater mInflater;
     private List<Task> mTasks; // Cached copy of Tasks
     private OnItemClickListener onItemClickListener;
+    private DateFormatUtil dateFormatUtil;
 
     public TaskListAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
+        dateFormatUtil = new DateFormatUtil(context);
     }
 
     @NonNull
@@ -107,7 +103,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
         if (lastTime == null) {
             return "Never";
         }
-        return DateFormatUtil.formatDate(lastTime);
+        return dateFormatUtil.formatDateWithTimeSinceNow(lastTime);
     }
 
     public void setTasks(List<Task> Tasks) {

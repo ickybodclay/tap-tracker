@@ -42,7 +42,7 @@ public abstract class TaskRoomDatabase extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             TaskRoomDatabase.class, "task_database")
-                            //.addCallback(fillDemoDatabaseCallback) // FOR TESTING ONLY
+                            .addCallback(fillDemoDatabaseCallback) // FOR TESTING ONLY
                             .build();
                 }
             }

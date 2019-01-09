@@ -16,8 +16,11 @@
 
 package com.detroitlabs.taptracker.utils;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
+
+import com.detroitlabs.taptracker.R;
 
 import java.text.SimpleDateFormat;
 import java.time.Clock;
@@ -32,57 +35,63 @@ public final class DateFormatUtil {
     @VisibleForTesting
     static final SimpleDateFormat currentDayTimeFormat = new SimpleDateFormat("h:mm a", Locale.US);
     @VisibleForTesting
-    static final SimpleDateFormat pastDaytimeFormat = new SimpleDateFormat("MM-dd h:mm a", Locale.US);
+    static final SimpleDateFormat timestampFormat = new SimpleDateFormat("MM-dd-yyyy h:mm a", Locale.US);
     @VisibleForTesting
     static final SimpleDateFormat monthDayFormat = new SimpleDateFormat("(MMM d)", Locale.US);
     @VisibleForTesting
     static final SimpleDateFormat monthYearFormat = new SimpleDateFormat("(MMM yyyy)", Locale.US);
 
-    private static Clock clock = Clock.systemDefaultZone();
+    private Clock clock = Clock.systemDefaultZone();
+    private Context context;
 
-    private DateFormatUtil() {
+    public DateFormatUtil(Context context) {
+        this.context = context;
     }
 
     @VisibleForTesting
-    static void setClock(@NonNull Clock clock) {
-        DateFormatUtil.clock = clock;
+    void setClock(@NonNull Clock clock) {
+        this.clock = clock;
     }
 
-    public static String formatDate(@NonNull Date dateToFormat) {
+    public String formatDateWithTimeSinceNow(@NonNull Date dateToFormat) {
         Instant then = dateToFormat.toInstant();
         Instant now = Instant.now(clock);
         LocalDateTime localThen = LocalDateTime.ofInstant(then, ZoneId.systemDefault());
         LocalDateTime localNow = LocalDateTime.ofInstant(now, ZoneId.systemDefault());
         long gap;
         if (now.isBefore(then.plusSeconds(60))) {
-            long gapSeconds = ChronoUnit.SECONDS.between(then, now);
-            return gapSeconds + " secs ago";
+            gap = ChronoUnit.SECONDS.between(then, now);
+            return context.getString(R.string.df_seconds, gap);
         } else if (now.isBefore(then.plus(60, ChronoUnit.MINUTES))) {
             gap = ChronoUnit.MINUTES.between(then, now);
-            return gap + " mins ago";
+            return context.getString(R.string.df_minutes, gap);
         } else if (now.isBefore(then.truncatedTo(ChronoUnit.DAYS).plus(1, ChronoUnit.DAYS))) {
-            return "Today " + currentDayTimeFormat.format(dateToFormat);
+            return context.getString(R.string.df_today, currentDayTimeFormat.format(dateToFormat));
         } else if (now.isBefore(then.truncatedTo(ChronoUnit.DAYS).plus(2, ChronoUnit.DAYS))) {
-            return "Yesterday " + currentDayTimeFormat.format(dateToFormat);
+            return context.getString(R.string.df_yesterday, currentDayTimeFormat.format(dateToFormat));
         } else if (now.isBefore(then.truncatedTo(ChronoUnit.DAYS).plus(7, ChronoUnit.DAYS))) {
             gap = ChronoUnit.DAYS.between(then, now);
-            return gap + " days ago";
+            return context.getString(R.string.df_days, gap);
         } else if (now.isBefore(then.truncatedTo(ChronoUnit.DAYS).plus(14, ChronoUnit.DAYS))) {
-            return "Last week " + monthDayFormat.format(dateToFormat);
+            return context.getString(R.string.df_last_week, monthDayFormat.format(dateToFormat));
         } else if (localNow.isBefore(localThen.plusMonths(1))) {
             gap = ChronoUnit.DAYS.between(then, now);
-            return gap + " days ago";
+            return context.getString(R.string.df_days, gap);
         } else if (localNow.isBefore(localThen.plusMonths(2))) {
-            return "Last month " + monthDayFormat.format(dateToFormat);
+            return context.getString(R.string.df_last_month, monthDayFormat.format(dateToFormat));
         } else if (localNow.isBefore(localThen.plusYears(1))) {
             gap = localThen.until(localNow, ChronoUnit.MONTHS);
-            return gap + " months ago";
+            return context.getString(R.string.df_months, gap);
         } else if (localNow.isBefore(localThen.plusYears(2))) {
-            return "Last year " + monthYearFormat.format(dateToFormat);
+            return context.getString(R.string.df_last_year, monthYearFormat.format(dateToFormat));
         } else if (localNow.isBefore(localThen.plusYears(9))) {
             gap = localThen.until(localNow, ChronoUnit.YEARS);
-            return gap + " years ago " + monthYearFormat.format(dateToFormat);
+            return context.getString(R.string.df_years, gap, monthYearFormat.format(dateToFormat));
         }
-        return pastDaytimeFormat.format(dateToFormat);
+        return timestampFormat.format(dateToFormat);
+    }
+
+    public String formatDate(@NonNull Date dateToFormat) {
+        return timestampFormat.format(dateToFormat);
     }
 }

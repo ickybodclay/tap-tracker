@@ -18,11 +18,22 @@
     <string name="app_name">TapTracker</string>
     <string name="action_settings">Settings</string>
 
-    <string name="hint_word">Task...</string>
+    <string name="hint_word">Task…</string>
     <string name="button_save">Save</string>
     <string name="empty_not_saved">Task not saved because it is empty.</string>
     <string name="action_add_task">Add Task</string>
     <string name="no_task_history">No task history.</string>
     <string name="delete_button_label">Delete task</string>
     <string name="close_button_label">Close</string>
+
+    <string name="df_seconds">%d secs ago</string>
+    <string name="df_minutes">%d mins ago</string>
+    <string name="df_days">%d days ago</string>
+    <string name="df_today">Today %s</string>
+    <string name="df_yesterday">Yesterday %s</string>
+    <string name="df_last_week">Last week %s</string>
+    <string name="df_last_month">Last month %s</string>
+    <string name="df_months">%d months ago</string>
+    <string name="df_last_year">Last year %s</string>
+    <string name="df_years">%d years ago %s</string>
 </resources>
