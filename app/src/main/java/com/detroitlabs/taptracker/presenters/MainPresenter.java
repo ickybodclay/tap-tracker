@@ -73,7 +73,7 @@ public class MainPresenter {
     }
 
     public void onTaskItemClicked(@NonNull Task task) {
-        view.showTaskDetailsDialog(task);
+        // do nothing
     }
 
     public void onTaskItemLongClicked(@NonNull Task item) {
@@ -87,6 +87,10 @@ public class MainPresenter {
     private void trackTaskCompleted(@NonNull Task item) {
         item.touch();
         view.update(item);
+    }
+
+    public void onViewMoreButtonClicked(@NonNull Task item) {
+        view.showTaskDetailsDialog(item);
     }
 
     public void onHistoryDateSelected(@NonNull Task task, @NonNull EventDay eventDay) {

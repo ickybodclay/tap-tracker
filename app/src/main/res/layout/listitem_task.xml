@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2018 Jason Petterson
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,38 +20,48 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="3dp"
-    android:focusable="true"
-    android:clickable="true"
     android:background="@android:color/holo_orange_light"
+    android:clickable="true"
+    android:descendantFocusability="blocksDescendants"
+    android:focusable="true"
     android:paddingLeft="2dp"
     android:paddingTop="10dp"
     android:paddingRight="2dp"
-    android:paddingBottom="10dp"
-    android:descendantFocusability="blocksDescendants">
+    android:paddingBottom="10dp">
 
-    <TextView
-        android:id="@+id/task_title"
-        style="@style/task_title"
+    <ImageButton
+        android:id="@+id/view_more_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:textAlignment="center"
-        android:textStyle="bold"
+        android:background="@null"
+        android:src="@drawable/ic_more_vert_white_24dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="@tools:sample/lorem" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
         android:id="@+id/track_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
+        android:background="@null"
         android:src="@drawable/ic_check_box_white_24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintBottom_toBottomOf="@+id/task_title"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/task_title" />
+        app:layout_constraintTop_toTopOf="@+id/task_title" />
+
+    <TextView
+        android:id="@+id/task_title"
+        style="@style/task_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:textAlignment="gravity"
+        android:textSize="21sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/track_button"
+        app:layout_constraintTop_toBottomOf="@+id/view_more_button"
+        tools:text="@tools:sample/lorem" />
 
     <TextView
         android:id="@+id/last_completed_date"
@@ -62,9 +71,10 @@
         android:layout_marginTop="8dp"
         android:textAlignment="center"
         android:textStyle="italic"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/track_button"
+        app:layout_constraintTop_toBottomOf="@+id/task_title"
         tools:text="@tools:sample/date/mmddyy" />
 
 </android.support.constraint.ConstraintLayout>

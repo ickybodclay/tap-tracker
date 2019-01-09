@@ -95,6 +95,11 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
             public void onTrackButtonClicked(Task item) {
                 presenter.onTrackButtonClicked(item);
             }
+
+            @Override
+            public void onViewMoreButtonClicked(Task item) {
+                presenter.onViewMoreButtonClicked(item);
+            }
         });
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(layoutManager);

@@ -22,8 +22,8 @@ android {
         applicationId "com.detroitlabs.taptracker"
         minSdkVersion 26
         targetSdkVersion 28
-        versionCode 6
-        versionName "ALPHAv0.2.0"
+        versionCode 7
+        versionName "ALPHAv0.2.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
             annotationProcessorOptions {

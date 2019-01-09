@@ -39,12 +39,14 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
         private final TextView taskTextView;
         private final TextView lastTimeTextView;
         private final ImageButton trackButton;
+        private final ImageButton viewMoreButton;
 
         private TaskViewHolder(View itemView) {
             super(itemView);
             taskTextView = itemView.findViewById(R.id.task_title);
             lastTimeTextView = itemView.findViewById(R.id.last_completed_date);
             trackButton = itemView.findViewById(R.id.track_button);
+            viewMoreButton = itemView.findViewById(R.id.view_more_button);
         }
 
         void bind(final Task item, final OnItemClickListener listener) {
@@ -67,6 +69,11 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
                 listener.onTrackButtonClicked(item);
                 notifyDataSetChanged();
             });
+
+            viewMoreButton.setOnClickListener(v -> {
+                listener.onViewMoreButtonClicked(item);
+                notifyDataSetChanged();
+            });
         }
     }
 
@@ -76,6 +83,8 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
         boolean onItemLongClick(Task item);
 
         void onTrackButtonClicked(Task item);
+
+        void onViewMoreButtonClicked(Task item);
     }
 
     private final LayoutInflater mInflater;
@@ -103,7 +112,6 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
             holder.lastTimeTextView.setText(formatLastTime(current.getLastCompletedTime()));
             holder.bind(mTasks.get(position), onItemClickListener);
         } else {
-            // Covers the case of data not being ready yet.
             holder.taskTextView.setText("No Task");
             holder.lastTimeTextView.setText("--");
         }
