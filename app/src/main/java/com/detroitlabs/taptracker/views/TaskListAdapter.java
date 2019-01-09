@@ -23,6 +23,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.detroitlabs.taptracker.R;
@@ -37,11 +38,13 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
     class TaskViewHolder extends RecyclerView.ViewHolder {
         private final TextView taskTextView;
         private final TextView lastTimeTextView;
+        private final ImageButton trackButton;
 
         private TaskViewHolder(View itemView) {
             super(itemView);
-            taskTextView = itemView.findViewById(R.id.textView);
-            lastTimeTextView = itemView.findViewById(R.id.lastTimeView);
+            taskTextView = itemView.findViewById(R.id.task_title);
+            lastTimeTextView = itemView.findViewById(R.id.last_completed_date);
+            trackButton = itemView.findViewById(R.id.track_button);
         }
 
         void bind(final Task item, final OnItemClickListener listener) {
@@ -59,6 +62,11 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
                 }
                 return handled;
             });
+
+            trackButton.setOnClickListener(view -> {
+                listener.onTrackButtonClicked(item);
+                notifyDataSetChanged();
+            });
         }
     }
 
@@ -66,10 +74,12 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
         void onItemClick(Task item);
 
         boolean onItemLongClick(Task item);
+
+        void onTrackButtonClicked(Task item);
     }
 
     private final LayoutInflater mInflater;
-    private List<Task> mTasks; // Cached copy of Tasks
+    private List<Task> mTasks;
     private OnItemClickListener onItemClickListener;
     private DateFormatUtil dateFormatUtil;
 
@@ -81,7 +91,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
     @NonNull
     @Override
     public TaskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = mInflater.inflate(R.layout.recyclerview_item, parent, false);
+        View itemView = mInflater.inflate(R.layout.listitem_task, parent, false);
         return new TaskViewHolder(itemView);
     }
 

@@ -73,8 +73,9 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        RecyclerView recyclerView = findViewById(R.id.recyclerview);
-        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
+        RecyclerView recyclerView = findViewById(R.id.recyclerview_task_list);
+        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
         mAdapter = new TaskListAdapter(this);
         mTaskViewModel = ViewModelProviders.of(this).get(TaskViewModel.class);
 
@@ -88,6 +89,11 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
             public boolean onItemLongClick(Task item) {
                 presenter.onTaskItemLongClicked(item);
                 return true;
+            }
+
+            @Override
+            public void onTrackButtonClicked(Task item) {
+                presenter.onTrackButtonClicked(item);
             }
         });
         recyclerView.setAdapter(mAdapter);
@@ -149,16 +155,16 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
     @Override
     public void showTaskDetailsDialog(@NonNull Task task) {
         final AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle(String.format("\'%s\' Details", task.getTask()))
+                .setTitle(getBaseContext().getString(R.string.task_details_title, task.getTask()))
                 .setView(R.layout.dialog_task_details)
                 .create();
         dialog.show();
 
         List<EventDay> events = getEventDays(task.getHistory());
 
-        CalendarView calendarView = dialog.findViewById(R.id.calendarView);
-        AppCompatButton deleteButton = dialog.findViewById(R.id.deleteButton);
-        AppCompatButton closeButton = dialog.findViewById(R.id.closeButton);
+        CalendarView calendarView = dialog.findViewById(R.id.calendar_view);
+        AppCompatButton deleteButton = dialog.findViewById(R.id.delete_button);
+        AppCompatButton closeButton = dialog.findViewById(R.id.close_button);
 
         if (task.getHistory().isEmpty()) {
             try {
@@ -217,9 +223,6 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement

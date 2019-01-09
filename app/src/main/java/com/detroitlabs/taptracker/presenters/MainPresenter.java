@@ -77,6 +77,14 @@ public class MainPresenter {
     }
 
     public void onTaskItemLongClicked(@NonNull Task item) {
+        // do nothing
+    }
+
+    public void onTrackButtonClicked(@NonNull Task item) {
+        trackTaskCompleted(item);
+    }
+
+    private void trackTaskCompleted(@NonNull Task item) {
         item.touch();
         view.update(item);
     }
