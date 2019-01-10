@@ -72,10 +72,11 @@ public class MainPresenter {
         view.startNewTaskActivity(NEW_TASK_ACTIVITY_REQUEST_CODE);
     }
 
-    public void onTaskItemClicked(@NonNull Task task) {
-        // do nothing
+    public void onTaskItemClicked(@NonNull Task item) {
+        view.showTaskDetailsDialog(item);
     }
 
+    /** @noinspection UnusedDeclaration */
     public void onTaskItemLongClicked(@NonNull Task item) {
         // do nothing
     }
