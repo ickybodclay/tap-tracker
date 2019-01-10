@@ -21,13 +21,14 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 @Entity(tableName = "task_table")
-public class Task {
+public class Task implements Serializable {
     @PrimaryKey
     @NonNull
     @ColumnInfo(name = "task")

@@ -18,12 +18,14 @@ package com.detroitlabs.taptracker.presenters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.applandeo.materialcalendarview.EventDay;
 import com.detroitlabs.taptracker.models.Task;
 import com.detroitlabs.taptracker.utils.DateFormatUtil;
+import com.detroitlabs.taptracker.views.MainActivity;
 import com.detroitlabs.taptracker.views.NewTaskActivity;
 
 import java.util.ArrayList;
@@ -51,6 +53,8 @@ public class MainPresenter {
         void showDateToast(String formattedDate);
 
         Context getContext();
+
+        void showNotificationForTask(Task item);
     }
 
     private static final String TAG = MainPresenter.class.getName();
@@ -79,6 +83,7 @@ public class MainPresenter {
     /** @noinspection UnusedDeclaration */
     public void onTaskItemLongClicked(@NonNull Task item) {
         // do nothing
+        view.showNotificationForTask(item);
     }
 
     public void onTrackButtonClicked(@NonNull Task item) {
@@ -148,6 +153,18 @@ public class MainPresenter {
             view.insert(task);
         } else {
             view.showEmptyTaskErrorDialog();
+        }
+    }
+
+    public void handleNotificationResult(@NonNull Intent intent) {
+        if (MainActivity.TRACK_ACTION.equals(intent.getAction())) {
+            Bundle extras = intent.getExtras();
+            if (extras != null) {
+                Task task = (Task) extras.getSerializable("task");
+                assert task != null;
+
+                Log.d(TAG, "Task notification clicked = " + task.getTask());
+            }
         }
     }
 }
