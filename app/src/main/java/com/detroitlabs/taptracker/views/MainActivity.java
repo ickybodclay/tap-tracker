@@ -233,33 +233,21 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
 
     @Override
     public void showNotificationForTask(@NonNull Task item) {
-        /*
-        Intent intent = new Intent(this, AlertDetails.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-
-        Intent snoozeIntent = new Intent(this, MyBroadcastReceiver.class);
-        snoozeIntent.setAction(ACTION_SNOOZE);
-        snoozeIntent.putExtra(EXTRA_NOTIFICATION_ID, 0);
-        PendingIntent snoozePendingIntent =
-                PendingIntent.getBroadcast(this, 0, snoozeIntent, 0);
-        */
-
+        int notificationId = item.hashCode();
         Intent trackIntent = new Intent(TRACK_ACTION);
         trackIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         trackIntent.putExtra("task", item);
-        PendingIntent pendingTrackIntent = PendingIntent.getActivity(this, 0, trackIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingTrackIntent = PendingIntent.getActivity(this, notificationId, trackIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_check_box_white_24dp)
                 .setContentTitle(String.format("Reminder: \'%s\'", item.getTask()))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .addAction(0, getString(R.string.track), pendingTrackIntent);
+                .setCategory(NotificationCompat.CATEGORY_REMINDER)
+                .addAction(0, getString(R.string.track), pendingTrackIntent)
+                .setAutoCancel(true);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-
-        // notificationId is a unique int for each notification that you must define
-        int notificationId = item.hashCode();
         notificationManager.notify(notificationId, mBuilder.build());
     }
 
