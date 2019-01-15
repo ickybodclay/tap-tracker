@@ -16,13 +16,9 @@
 
 package com.detroitlabs.taptracker.views;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -53,6 +49,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import static com.detroitlabs.taptracker.presenters.MainPresenter.CHANNEL_ID;
+
 public class MainActivity extends AppCompatActivity implements MainPresenter.View {
     private static final String TAG = MainActivity.class.getName();
 
@@ -72,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
     private void setupPresenter() {
         presenter = new MainPresenter();
         presenter.setView(this);
-        presenter.handleNotificationResult(getIntent());
+        presenter.handleActions(getIntent());
     }
 
     private void setupViews() {
@@ -112,8 +110,6 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
         recyclerView.setLayoutManager(layoutManager);
 
         mTaskViewModel.getAllTasks().observe(this, tasks -> mAdapter.setTasks(tasks));
-
-        createNotificationChannel();
     }
 
     @Override
@@ -228,43 +224,20 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
                 .show();
     }
 
-    public static final String CHANNEL_ID = "Reminders";
-    public static final String TRACK_ACTION = "com.detroitlabs.taptracker.TRACK_ACTION";
-
     @Override
     public void showNotificationForTask(@NonNull Task item) {
         int notificationId = item.hashCode();
-        Intent trackIntent = new Intent(TRACK_ACTION);
-        trackIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        trackIntent.putExtra("task", item);
-        PendingIntent pendingTrackIntent = PendingIntent.getActivity(this, notificationId, trackIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_check_box_white_24dp)
                 .setContentTitle(String.format("Reminder: \'%s\'", item.getTask()))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setCategory(NotificationCompat.CATEGORY_REMINDER)
-                .addAction(0, getString(R.string.track), pendingTrackIntent)
+                .addAction(0, getString(R.string.track), presenter.getTrackPendingIntent(item))
                 .setAutoCancel(true);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         notificationManager.notify(notificationId, mBuilder.build());
-    }
-
-    private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.channel_name);
-            String description = getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
     }
 
     @Override

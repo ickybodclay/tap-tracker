@@ -19,16 +19,17 @@ package com.detroitlabs.taptracker.models;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 @Entity(tableName = "task_table")
-public class Task implements Serializable {
+public class Task implements Parcelable {
     @PrimaryKey
     @NonNull
     @ColumnInfo(name = "task")
@@ -82,4 +83,44 @@ public class Task implements Serializable {
     public int hashCode() {
         return Objects.hash(task);
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeString(task);
+        out.writeLong(lastCompletedTime.getTime());
+
+        long[] historyArray = new long[history.size()];
+        for (int i = 0; i < history.size(); ++i) {
+            historyArray[i] = history.get(i).getTime();
+        }
+        out.writeLongArray(historyArray);
+    }
+
+    public static final Parcelable.Creator<Task> CREATOR = new Parcelable.Creator<Task>() {
+        public Task createFromParcel(Parcel in) {
+            return new Task(in);
+        }
+
+        public Task[] newArray(int size) {
+            return new Task[size];
+        }
+    };
+
+    private Task(Parcel in) {
+        this.task = Objects.requireNonNull(in.readString());
+        this.lastCompletedTime = new Date(in.readLong());
+
+        history.clear();
+        long[] historyArray = in.createLongArray();
+        for (long time : Objects.requireNonNull(historyArray)) {
+            history.add(new Date(time));
+        }
+    }
+
 }

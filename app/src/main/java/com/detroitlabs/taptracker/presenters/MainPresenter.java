@@ -16,22 +16,31 @@
 
 package com.detroitlabs.taptracker.presenters;
 
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.applandeo.materialcalendarview.EventDay;
+import com.detroitlabs.taptracker.R;
 import com.detroitlabs.taptracker.models.Task;
 import com.detroitlabs.taptracker.utils.DateFormatUtil;
-import com.detroitlabs.taptracker.views.MainActivity;
 import com.detroitlabs.taptracker.views.NewTaskActivity;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -60,9 +69,13 @@ public class MainPresenter {
     private static final String TAG = MainPresenter.class.getName();
 
     public static final int NEW_TASK_ACTIVITY_REQUEST_CODE = 1;
+    public static final String CHANNEL_ID = "Reminders";
+    public static final String TRACK_ACTION = "com.detroitlabs.taptracker.TRACK_ACTION";
+    public static final String REMINDER_ACTION = "com.detroitlabs.taptracker.REMINDER_ACTION";
 
     private View view;
     private DateFormatUtil dateFormatUtil;
+    private AlarmManager alarmManager;
 
     public MainPresenter() {
     }
@@ -70,6 +83,21 @@ public class MainPresenter {
     public void setView(View view) {
         this.view = view;
         this.dateFormatUtil = new DateFormatUtil(view.getContext());
+        this.alarmManager = (AlarmManager) view.getContext().getSystemService(Context.ALARM_SERVICE);
+        createNotificationChannel();
+    }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = view.getContext().getString(R.string.channel_name);
+            String description = view.getContext().getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+
+            NotificationManager notificationManager = view.getContext().getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
     public void onNewTaskButtonClicked() {
@@ -80,10 +108,15 @@ public class MainPresenter {
         view.showTaskDetailsDialog(item);
     }
 
-    /** @noinspection UnusedDeclaration */
+    /**
+     * @noinspection UnusedDeclaration
+     */
     public void onTaskItemLongClicked(@NonNull Task item) {
         // do nothing
-        view.showNotificationForTask(item);
+
+        // FIXME for testing only
+        //view.showNotificationForTask(item);
+        scheduleReminder(item);
     }
 
     public void onTrackButtonClicked(@NonNull Task item) {
@@ -105,14 +138,12 @@ public class MainPresenter {
         List<Date> dayHistory = getTaskHistoryForDay(task, eventDay);
         if (dayHistory.isEmpty()) {
             builder.append("No task history for this date");
-        }
-        else {
+        } else {
             boolean first = true;
             for (Date date : dayHistory) {
                 if (first) {
                     first = false;
-                }
-                else {
+                } else {
                     builder.append('\n');
                 }
 
@@ -134,8 +165,8 @@ public class MainPresenter {
             Calendar taskCal = Calendar.getInstance();
             taskCal.setTime(d);
             if (taskCal.get(Calendar.DAY_OF_MONTH) == dayCal.get(Calendar.DAY_OF_MONTH) &&
-                taskCal.get(Calendar.MONTH) == dayCal.get(Calendar.MONTH) &&
-                taskCal.get(Calendar.YEAR) == dayCal.get(Calendar.YEAR)) {
+                    taskCal.get(Calendar.MONTH) == dayCal.get(Calendar.MONTH) &&
+                    taskCal.get(Calendar.YEAR) == dayCal.get(Calendar.YEAR)) {
                 datesOnEventDay.add(d);
             }
         }
@@ -156,15 +187,74 @@ public class MainPresenter {
         }
     }
 
-    public void handleNotificationResult(@NonNull Intent intent) {
-        if (MainActivity.TRACK_ACTION.equals(intent.getAction())) {
+    public void handleActions(@NonNull Intent intent) {
+        if (TRACK_ACTION.equals(intent.getAction())) {
             Bundle extras = intent.getExtras();
             if (extras != null) {
-                Task task = (Task) extras.getSerializable("task");
-                assert task != null;
+                Task task = extras.getParcelable("task");
 
-                Log.d(TAG, "Task notification clicked = " + task.getTask());
+                Log.d(TAG, "Task notification clicked = " + Objects.requireNonNull(task).getTask());
             }
         }
+        else if (REMINDER_ACTION.equals(intent.getAction())) {
+            Bundle extras = intent.getExtras();
+            if (extras != null) {
+                byte[] taskBytes = extras.getByteArray("task");
+                Task task = unmarshall(taskBytes, Task.CREATOR);
+
+                Log.d(TAG, "> Task reminder alarm triggered = " + task.getTask());
+                view.showNotificationForTask(task);
+            }
+
+        }
+    }
+
+    // TODO add data class to handle frequency
+    public void scheduleReminder(@NonNull Task task) {
+        Log.d(TAG, "> Scheduled alarm for " + task.getTask());
+
+        final int ALARM_DELAY_MILLIS = 3000;
+
+        alarmManager.set(AlarmManager.RTC, SystemClock.elapsedRealtime() + ALARM_DELAY_MILLIS, getReminderPendingIntent(task));
+    }
+
+    public void cancelReminder(@NonNull Task task) {
+        alarmManager.cancel(getReminderPendingIntent(task));
+    }
+
+    public PendingIntent getTrackPendingIntent(@NonNull Task task) {
+        Intent trackIntent = new Intent(TRACK_ACTION);
+        trackIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        trackIntent.putExtra("task", task);
+        return PendingIntent.getActivity(view.getContext(), task.hashCode(), trackIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    public PendingIntent getReminderPendingIntent(@NonNull Task task) {
+        Intent trackIntent = new Intent(REMINDER_ACTION);
+        trackIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        trackIntent.putExtra("task", marshall(task));
+        return PendingIntent.getActivity(view.getContext(), task.hashCode(), trackIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    public static byte[] marshall(Parcelable parcelable) {
+        Parcel parcel = Parcel.obtain();
+        parcelable.writeToParcel(parcel, 0);
+        byte[] bytes = parcel.marshall();
+        parcel.recycle();
+        return bytes;
+    }
+
+    public static Parcel unmarshall(byte[] bytes) {
+        Parcel parcel = Parcel.obtain();
+        parcel.unmarshall(bytes, 0, bytes.length);
+        parcel.setDataPosition(0);
+        return parcel;
+    }
+
+    public static <T> T unmarshall(byte[] bytes, Parcelable.Creator<T> creator) {
+        Parcel parcel = unmarshall(bytes);
+        T result = creator.createFromParcel(parcel);
+        parcel.recycle();
+        return result;
     }
 }
