@@ -71,7 +71,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
             });
 
             viewMoreButton.setOnClickListener(v -> {
-                listener.onViewMoreButtonClicked(item);
+                listener.onViewMoreButtonClicked(v, item);
                 notifyDataSetChanged();
             });
         }
@@ -84,7 +84,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
 
         void onTrackButtonClicked(Task item);
 
-        void onViewMoreButtonClicked(Task item);
+        void onViewMoreButtonClicked(View view, Task item);
     }
 
     private final LayoutInflater mInflater;

@@ -24,16 +24,16 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class NewTaskPresenterTest {
-    private NewTaskPresenter subject;
+public class EditTaskPresenterTest {
+    private EditTaskPresenter subject;
 
     @Mock
-    private NewTaskPresenter.View mockView;
+    private EditTaskPresenter.View mockView;
 
     @Before
     public void setup() {
         initMocks(this);
-        subject = new NewTaskPresenter();
+        subject = new EditTaskPresenter();
         subject.setView(mockView);
     }
 

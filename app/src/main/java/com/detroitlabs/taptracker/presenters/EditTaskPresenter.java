@@ -18,7 +18,7 @@ package com.detroitlabs.taptracker.presenters;
 
 import android.support.annotation.NonNull;
 
-public class NewTaskPresenter {
+public class EditTaskPresenter {
     public interface View {
 
         void setResultCanceledAndFinish();
@@ -28,7 +28,7 @@ public class NewTaskPresenter {
 
     private View view;
 
-    public NewTaskPresenter() {
+    public EditTaskPresenter() {
     }
 
     public void setView(@NonNull View view) {

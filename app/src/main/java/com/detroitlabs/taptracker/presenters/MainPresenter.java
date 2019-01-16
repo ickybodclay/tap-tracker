@@ -29,12 +29,13 @@ import android.os.Parcelable;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.view.View;
 
 import com.applandeo.materialcalendarview.EventDay;
 import com.detroitlabs.taptracker.R;
 import com.detroitlabs.taptracker.models.Task;
 import com.detroitlabs.taptracker.utils.DateFormatUtil;
-import com.detroitlabs.taptracker.views.NewTaskActivity;
+import com.detroitlabs.taptracker.views.EditTaskActivity;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -64,6 +65,8 @@ public class MainPresenter {
         Context getContext();
 
         void showNotificationForTask(Task item);
+
+        void showTaskActionsPopup(@NonNull android.view.View taskView, @NonNull Task task);
     }
 
     private static final String TAG = MainPresenter.class.getName();
@@ -128,8 +131,8 @@ public class MainPresenter {
         view.update(item);
     }
 
-    public void onViewMoreButtonClicked(@NonNull Task item) {
-        view.showTaskDetailsDialog(item);
+    public void onViewMoreButtonClicked(@NonNull android.view.View taskView, @NonNull Task item) {
+        view.showTaskActionsPopup(taskView, item);
     }
 
     public void onHistoryDateSelected(@NonNull Task task, @NonNull EventDay eventDay) {
@@ -180,7 +183,7 @@ public class MainPresenter {
 
     public void handleOnActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == NEW_TASK_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
-            Task task = new Task(data.getStringExtra(NewTaskActivity.EXTRA_REPLY));
+            Task task = new Task(data.getStringExtra(EditTaskActivity.EXTRA_REPLY));
             view.insert(task);
         } else {
             view.showEmptyTaskErrorDialog();

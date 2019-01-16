@@ -32,7 +32,10 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.applandeo.materialcalendarview.CalendarView;
@@ -102,8 +105,8 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
             }
 
             @Override
-            public void onViewMoreButtonClicked(Task item) {
-                presenter.onViewMoreButtonClicked(item);
+            public void onViewMoreButtonClicked(View taskView, Task item) {
+                presenter.onViewMoreButtonClicked(taskView, item);
             }
         });
         recyclerView.setAdapter(mAdapter);
@@ -134,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
 
     @Override
     public void startNewTaskActivity(int requestCode) {
-        Intent intent = new Intent(this, NewTaskActivity.class);
+        Intent intent = new Intent(this, EditTaskActivity.class);
         startActivityForResult(intent, requestCode);
     }
 
@@ -271,4 +274,19 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
     public Context getContext() {
         return getBaseContext();
     }
+
+    @Override
+    public void showTaskActionsPopup(@NonNull View taskView, @NonNull final Task task) {
+        PopupMenu popup = new PopupMenu(this, taskView);
+        popup.setOnMenuItemClickListener(item -> {
+            Log.d(TAG, "Task menu item clicked = " + item.toString() + " for " + task.getTask());
+            return true;
+        });
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.task_actions, popup.getMenu());
+        popup.show();
+    }
+
+
+
 }

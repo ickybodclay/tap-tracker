@@ -20,7 +20,7 @@ import android.app.Activity;
 import android.content.Intent;
 
 import com.detroitlabs.taptracker.models.Task;
-import com.detroitlabs.taptracker.views.NewTaskActivity;
+import com.detroitlabs.taptracker.views.EditTaskActivity;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -88,7 +88,7 @@ public class MainPresenterTest {
         String testTaskName = "test task";
         Task test = new Task(testTaskName);
         Intent data = mock(Intent.class);
-        when(data.getStringExtra(NewTaskActivity.EXTRA_REPLY)).thenReturn(testTaskName);
+        when(data.getStringExtra(EditTaskActivity.EXTRA_REPLY)).thenReturn(testTaskName);
         subject.handleOnActivityResult(NEW_TASK_ACTIVITY_REQUEST_CODE, Activity.RESULT_OK, data);
         verify(mockView).insert(eq(test));
     }
