@@ -2,12 +2,18 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "9c7924c9cc36594845ddfabcfd0da0aa",
+    "identityHash": "9ac809770948c5e6ddf9babda1b1865b",
     "entities": [
       {
         "tableName": "task_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`task` TEXT NOT NULL, `last_completed` INTEGER, `history` TEXT, PRIMARY KEY(`task`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`task_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `task` TEXT NOT NULL, `last_completed` INTEGER, `history` TEXT)",
         "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "task_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
           {
             "fieldPath": "task",
             "columnName": "task",
@@ -29,17 +35,26 @@
         ],
         "primaryKey": {
           "columnNames": [
-            "task"
+            "task_id"
           ],
-          "autoGenerate": false
+          "autoGenerate": true
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_task_table_task",
+            "unique": true,
+            "columnNames": [
+              "task"
+            ],
+            "createSql": "CREATE UNIQUE INDEX `index_task_table_task` ON `${TABLE_NAME}` (`task`)"
+          }
+        ],
         "foreignKeys": []
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"9c7924c9cc36594845ddfabcfd0da0aa\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"9ac809770948c5e6ddf9babda1b1865b\")"
     ]
   }
 }

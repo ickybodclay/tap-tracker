@@ -18,15 +18,21 @@ package com.detroitlabs.taptracker.presenters;
 
 import android.support.annotation.NonNull;
 
+import com.detroitlabs.taptracker.models.Task;
+
 public class EditTaskPresenter {
     public interface View {
 
         void setResultCanceledAndFinish();
 
         void setResultOkAndFinish(String taskName);
+
+        void setResultOkAndFinish(Task task);
     }
 
     private View view;
+
+    private Task editTask;
 
     public EditTaskPresenter() {
     }
@@ -38,8 +44,19 @@ public class EditTaskPresenter {
     public void onSaveButtonClicked(String taskName) {
         if (taskName == null || taskName.equals("")) {
             view.setResultCanceledAndFinish();
+        } else if (isEditMode()) {
+            editTask.setTask(taskName);
+            view.setResultOkAndFinish(editTask);
         } else {
             view.setResultOkAndFinish(taskName);
         }
+    }
+
+    public void setEditTask(Task existingTask) {
+        this.editTask = existingTask;
+    }
+
+    public boolean isEditMode() {
+        return editTask != null;
     }
 }

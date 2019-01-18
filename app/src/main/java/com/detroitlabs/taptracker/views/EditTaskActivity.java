@@ -23,6 +23,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.detroitlabs.taptracker.R;
+import com.detroitlabs.taptracker.models.Task;
 import com.detroitlabs.taptracker.presenters.EditTaskPresenter;
 
 public class EditTaskActivity extends AppCompatActivity implements EditTaskPresenter.View {
@@ -39,6 +40,7 @@ public class EditTaskActivity extends AppCompatActivity implements EditTaskPrese
 
         setupPresenter();
         setupViews();
+        setupForEditTask();
     }
 
     private void setupPresenter() {
@@ -54,6 +56,14 @@ public class EditTaskActivity extends AppCompatActivity implements EditTaskPrese
         button.setOnClickListener(view -> presenter.onSaveButtonClicked(mEditTaskView.getText().toString()));
     }
 
+    private void setupForEditTask() {
+        Bundle extras = getIntent().getExtras();
+        if (extras != null && extras.containsKey("task")) {
+            Task existingTask = extras.getParcelable("task");
+            presenter.setEditTask(existingTask);
+        }
+    }
+
     @Override
     public void setResultCanceledAndFinish() {
         Intent replyIntent = new Intent();
@@ -65,6 +75,14 @@ public class EditTaskActivity extends AppCompatActivity implements EditTaskPrese
     public void setResultOkAndFinish(String taskName) {
         Intent replyIntent = new Intent();
         replyIntent.putExtra(EXTRA_REPLY, taskName);
+        setResult(RESULT_OK, replyIntent);
+        finish();
+    }
+
+    @Override
+    public void setResultOkAndFinish(Task task) {
+        Intent replyIntent = new Intent();
+        replyIntent.putExtra(EXTRA_REPLY, task);
         setResult(RESULT_OK, replyIntent);
         finish();
     }

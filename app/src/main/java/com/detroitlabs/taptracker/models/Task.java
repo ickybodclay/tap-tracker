@@ -18,6 +18,7 @@ package com.detroitlabs.taptracker.models;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -28,9 +29,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-@Entity(tableName = "task_table")
+@Entity(tableName = "task_table",
+        indices = {@Index(value = {"task"}, unique = true)})
 public class Task implements Parcelable {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "task_id")
+    private int id;
+
     @NonNull
     @ColumnInfo(name = "task")
     private String task;
@@ -45,18 +50,30 @@ public class Task implements Parcelable {
         this.task = task;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setTask(@NonNull String task) {
+        this.task = task;
+    }
+
     @NonNull
     public String getTask() {
         return task;
     }
 
-    public Date getLastCompletedTime() {
-        return lastCompletedTime;
-    }
-
     public void setLastCompletedTime(@NonNull Date lastCompletedTime) {
         this.lastCompletedTime = lastCompletedTime;
         this.history.add(0, lastCompletedTime);
+    }
+
+    public Date getLastCompletedTime() {
+        return lastCompletedTime;
     }
 
     public void setHistory(@NonNull List<Date> history) {
@@ -92,6 +109,7 @@ public class Task implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel out, int flags) {
+        out.writeInt(id);
         out.writeString(task);
         out.writeLong(lastCompletedTime.getTime());
 
@@ -113,6 +131,7 @@ public class Task implements Parcelable {
     };
 
     private Task(Parcel in) {
+        this.id = in.readInt();
         this.task = Objects.requireNonNull(in.readString());
         this.lastCompletedTime = new Date(in.readLong());
 
@@ -122,5 +141,4 @@ public class Task implements Parcelable {
             history.add(new Date(time));
         }
     }
-
 }

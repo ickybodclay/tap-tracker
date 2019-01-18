@@ -123,6 +123,12 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
         startActivityForResult(intent, requestCode);
     }
 
+    @Override
+    public void startEditTaskActivity(int requestCode, @NonNull Task task) {
+        Intent intent = new Intent(this, EditTaskActivity.class);
+        intent.putExtra("task", task);
+        startActivityForResult(intent, requestCode);
+    }
 
     @Override
     public void insert(@NonNull Task task) {

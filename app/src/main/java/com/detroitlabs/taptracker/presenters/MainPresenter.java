@@ -67,11 +67,14 @@ public class MainPresenter {
         void showNotificationForTask(Task item);
 
         void showTaskActionsPopup(@NonNull android.view.View taskView, @NonNull Task task);
+
+        void startEditTaskActivity(int requestCode, @NonNull Task task);
     }
 
     private static final String TAG = MainPresenter.class.getName();
 
     public static final int NEW_TASK_ACTIVITY_REQUEST_CODE = 1;
+    public static final int EDIT_TASK_ACTIVITY_REQUEST_CODE = 2;
     public static final String CHANNEL_ID = "Reminders";
     public static final String TRACK_ACTION = "com.detroitlabs.taptracker.TRACK_ACTION";
     public static final String REMINDER_ACTION = "com.detroitlabs.taptracker.REMINDER_ACTION";
@@ -178,7 +181,7 @@ public class MainPresenter {
 
     public void onEditTaskClicked(@NonNull Task task) {
         Log.d(TAG, "Edit task clicked: " + task.getTask());
-        // TODO show EditTask with edit flag
+        view.startEditTaskActivity(EDIT_TASK_ACTIVITY_REQUEST_CODE, task);
     }
 
     public void onDeleteTaskClicked(@NonNull Task task) {
@@ -190,6 +193,9 @@ public class MainPresenter {
         if (requestCode == NEW_TASK_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
             Task task = new Task(data.getStringExtra(EditTaskActivity.EXTRA_REPLY));
             view.insert(task);
+        } else if (requestCode == EDIT_TASK_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
+            Task task = data.getParcelableExtra(EditTaskActivity.EXTRA_REPLY);
+            view.update(task);
         } else {
             view.showEmptyTaskErrorDialog();
         }
