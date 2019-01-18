@@ -29,7 +29,7 @@ import android.os.Parcelable;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.view.View;
+import android.view.MenuItem;
 
 import com.applandeo.materialcalendarview.EventDay;
 import com.detroitlabs.taptracker.R;
@@ -176,6 +176,11 @@ public class MainPresenter {
         return datesOnEventDay;
     }
 
+    public void onEditTaskClicked(@NonNull Task task) {
+        Log.d(TAG, "Edit task clicked: " + task.getTask());
+        // TODO show EditTask with edit flag
+    }
+
     public void onDeleteTaskClicked(@NonNull Task task) {
         Log.d(TAG, "Delete task clicked: " + task.getTask());
         view.delete(task);
@@ -198,8 +203,7 @@ public class MainPresenter {
 
                 Log.d(TAG, "Task notification clicked = " + Objects.requireNonNull(task).getTask());
             }
-        }
-        else if (REMINDER_ACTION.equals(intent.getAction())) {
+        } else if (REMINDER_ACTION.equals(intent.getAction())) {
             Bundle extras = intent.getExtras();
             if (extras != null) {
                 byte[] taskBytes = extras.getByteArray("task");
@@ -208,7 +212,16 @@ public class MainPresenter {
                 Log.d(TAG, "> Task reminder alarm triggered = " + task.getTask());
                 view.showNotificationForTask(task);
             }
+        }
+    }
 
+    public boolean onTaskActionItemClicked(MenuItem item, Task task) {
+        switch (item.getItemId()) {
+            case R.id.menu_edit:
+                onEditTaskClicked(task);
+                return true;
+            default:
+                return false;
         }
     }
 

@@ -20,7 +20,6 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -31,6 +30,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -57,8 +57,9 @@ import static com.detroitlabs.taptracker.presenters.MainPresenter.CHANNEL_ID;
 public class MainActivity extends AppCompatActivity implements MainPresenter.View {
     private static final String TAG = MainActivity.class.getName();
 
-    private TaskViewModel mTaskViewModel;
-    private TaskListAdapter mAdapter;
+    private TaskViewModel taskViewModel;
+    private RecyclerView taskRecyclerView;
+    private TaskListAdapter adapter;
 
     private MainPresenter presenter;
 
@@ -81,13 +82,13 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        RecyclerView recyclerView = findViewById(R.id.recyclerview_task_list);
+        taskRecyclerView = findViewById(R.id.recyclerview_task_list);
         StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
-        mAdapter = new TaskListAdapter(this);
-        mTaskViewModel = ViewModelProviders.of(this).get(TaskViewModel.class);
+        //layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+        adapter = new TaskListAdapter(this);
+        taskViewModel = ViewModelProviders.of(this).get(TaskViewModel.class);
 
-        mAdapter.setOnItemClickListener(new TaskListAdapter.OnItemClickListener() {
+        adapter.setOnItemClickListener(new TaskListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Task item) {
                 presenter.onTaskItemClicked(item);
@@ -109,30 +110,11 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
                 presenter.onViewMoreButtonClicked(taskView, item);
             }
         });
-        recyclerView.setAdapter(mAdapter);
-        recyclerView.setLayoutManager(layoutManager);
+        taskRecyclerView.setAdapter(adapter);
+        taskRecyclerView.setLayoutManager(layoutManager);
+        registerForContextMenu(taskRecyclerView);
 
-        mTaskViewModel.getAllTasks().observe(this, tasks -> mAdapter.setTasks(tasks));
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        refreshAdapterOnInterval();
-    }
-
-    private void refreshAdapterOnInterval() {
-        final long intervalInMs = 1000L;
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-
-            @Override
-            public void run() {
-                mAdapter.notifyDataSetChanged();
-                handler.postDelayed(this, intervalInMs);
-            }
-        }, intervalInMs);
+        taskViewModel.getAllTasks().observe(this, tasks -> adapter.setTasks(tasks));
     }
 
     @Override
@@ -144,17 +126,17 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
 
     @Override
     public void insert(@NonNull Task task) {
-        mTaskViewModel.insert(task);
+        taskViewModel.insert(task);
     }
 
     @Override
     public void update(@NonNull Task item) {
-        mTaskViewModel.update(item);
+        taskViewModel.update(item);
     }
 
     @Override
     public void delete(@NonNull Task task) {
-        mTaskViewModel.delete(task);
+        taskViewModel.delete(task);
     }
 
     @Override
@@ -276,17 +258,16 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
     }
 
     @Override
-    public void showTaskActionsPopup(@NonNull View taskView, @NonNull final Task task) {
-        PopupMenu popup = new PopupMenu(this, taskView);
+    public void showTaskActionsPopup(@NonNull View view, @NonNull final Task task) {
+        Log.d(TAG, "> Show task actions for task: " + task.getTask());
+        PopupMenu popup = new PopupMenu(this, view, Gravity.BOTTOM | Gravity.START);
         popup.setOnMenuItemClickListener(item -> {
-            Log.d(TAG, "Task menu item clicked = " + item.toString() + " for " + task.getTask());
-            return true;
+            Log.d(TAG, ">> Task menu item clicked = " + item.toString() + " for " + task.getTask());
+
+            return presenter.onTaskActionItemClicked(item, task);
         });
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.task_actions, popup.getMenu());
         popup.show();
     }
-
-
-
 }

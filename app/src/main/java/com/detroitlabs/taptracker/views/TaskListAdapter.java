@@ -54,7 +54,6 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
 
             itemView.setOnClickListener(view -> {
                 listener.onItemClick(item);
-                notifyDataSetChanged();
             });
 
             itemView.setOnLongClickListener(view -> {
@@ -72,7 +71,6 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
 
             viewMoreButton.setOnClickListener(v -> {
                 listener.onViewMoreButtonClicked(v, item);
-                notifyDataSetChanged();
             });
         }
     }
@@ -87,30 +85,29 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
         void onViewMoreButtonClicked(View view, Task item);
     }
 
-    private final LayoutInflater mInflater;
-    private List<Task> mTasks;
+    private List<Task> tasks;
     private OnItemClickListener onItemClickListener;
     private DateFormatUtil dateFormatUtil;
 
     public TaskListAdapter(Context context) {
-        mInflater = LayoutInflater.from(context);
         dateFormatUtil = new DateFormatUtil(context);
     }
 
     @NonNull
     @Override
     public TaskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = mInflater.inflate(R.layout.listitem_task, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.listitem_task, parent, false);
         return new TaskViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
-        if (mTasks != null) {
-            Task current = mTasks.get(position);
+        if (tasks != null) {
+            Task current = tasks.get(position);
             holder.taskTextView.setText(current.getTask());
             holder.lastTimeTextView.setText(formatLastTime(current.getLastCompletedTime()));
-            holder.bind(mTasks.get(position), onItemClickListener);
+            holder.bind(tasks.get(position), onItemClickListener);
         } else {
             holder.taskTextView.setText("No Task");
             holder.lastTimeTextView.setText("--");
@@ -125,17 +122,15 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
     }
 
     public void setTasks(List<Task> Tasks) {
-        mTasks = Tasks;
+        tasks = Tasks;
         notifyDataSetChanged();
     }
 
-    // getItemCount() is called many times, and when it is first called,
-    // mTasks has not been updated (means initially, it's null, and we can't return null).
     @Override
     public int getItemCount() {
-        if (mTasks != null)
-            return mTasks.size();
-        else return 0;
+        if (tasks != null) {
+            return tasks.size();
+        } else return 0;
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
