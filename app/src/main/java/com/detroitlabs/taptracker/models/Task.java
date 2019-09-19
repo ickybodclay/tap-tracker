@@ -111,7 +111,11 @@ public class Task implements Parcelable {
     public void writeToParcel(Parcel out, int flags) {
         out.writeInt(id);
         out.writeString(task);
-        out.writeLong(lastCompletedTime.getTime());
+        long lastCompletedTimeMs = -1L;
+        if (lastCompletedTime != null) {
+            lastCompletedTimeMs = lastCompletedTime.getTime();
+        }
+        out.writeLong(lastCompletedTimeMs);
 
         long[] historyArray = new long[history.size()];
         for (int i = 0; i < history.size(); ++i) {
@@ -133,7 +137,14 @@ public class Task implements Parcelable {
     private Task(Parcel in) {
         this.id = in.readInt();
         this.task = Objects.requireNonNull(in.readString());
-        this.lastCompletedTime = new Date(in.readLong());
+
+        long lastCompletedTimeMs = in.readLong();
+        if(lastCompletedTimeMs == -1L) {
+            this.lastCompletedTime = null;
+        }
+        else {
+            this.lastCompletedTime = new Date(lastCompletedTimeMs);
+        }
 
         history.clear();
         long[] historyArray = in.createLongArray();
